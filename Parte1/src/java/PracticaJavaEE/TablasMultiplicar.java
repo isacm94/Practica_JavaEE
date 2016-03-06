@@ -7,6 +7,7 @@ package PracticaJavaEE;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import static java.lang.System.out;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -15,9 +16,9 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  *
- * @author 2DAW
+ * @author Isabel
  */
-public class Calculadora extends HttpServlet {
+public class TablasMultiplicar extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -28,84 +29,85 @@ public class Calculadora extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    @SuppressWarnings("empty-statement")
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         //Recogemos datos enviados por post
-        String n1 = request.getParameter("num1");
-        String n2 = request.getParameter("num2");
-        String operacion = request.getParameter("operacion");
+        String numero = request.getParameter("numero");
+        String btn_mostrar = request.getParameter("mostrar");//Mostrar 1 tabla
+        String btn_mostrartodas = request.getParameter("mostrartodas");//Mostrar todas tabla
+        String tabla = "";
+        String error = "";
 
-        
-        String rdo = "";//Resultado
-        float n_1 = 0;
-        float n_2 = 0;
-        String error_n1 = "";
-        String error_n2 = "";
-        
-        //Convertimos a float
+        int num = -1;
         try {
-            n_1 = Float.parseFloat(n1);
-            error_n1 = "";
+            num = Integer.parseInt(numero);
         } catch (Exception e) {
-            error_n1 = "Debe ser un número";
+            error = "Debe ser un número";
         }
 
-        try {
-            n_2 = Float.parseFloat(n2);
-            error_n2 = "";
-        } catch (Exception e) {
-            error_n2 = "Debe ser un número";
+        if (! btn_mostrar.equals("") && error.equals("")) {//Boton pulsado --> Mostrar una tabla, y no se ha producido un error 
+            tabla = Tabla(num);
         }
-
-        //Si se intenta dividir por 0
-        if(operacion.equals("dividir") && error_n2.equals("") && n_2 == 0){
-            error_n2 = "No se puede dividir por 0";
+        else if (! btn_mostrartodas.equals("")) {//Boton pulsado --> Mostrar una tabla, y no se ha producido un error 
+            tabla = Tablas();
         }
-        //No se ha producido ningún error
-        if (error_n1.equals("") && error_n2.equals("")) {
-            rdo = Resultado(n_1, n_2, operacion);
-        }       
 
         //Pasamos los datos a Calculadora.jsp
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/Calculadora.jsp");
-        
-        request.setAttribute("num1", n1);
-        request.setAttribute("num2", n2);
-        request.setAttribute("resultado", rdo);
-        request.setAttribute("operacion", operacion);
-        request.setAttribute("error_n1", error_n1);
-        request.setAttribute("error_n2", error_n2);
-        dispatcher.forward(request, response);//Redirigimos al formulario de la calculadora
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/TablasMultiplicar.jsp");
+
+        request.setAttribute("numero", numero);
+        request.setAttribute("tabla", tabla);
+        request.setAttribute("error", error);
+        request.setAttribute("btn_mostrar", btn_mostrar);
+        request.setAttribute("btn_mostrartodas", btn_mostrartodas);
+        dispatcher.forward(request, response);//Redirigimos al formulario de la tabla de multiplicar
     }
 
-    public String Resultado(float n1, float n2, String operacion) {
-        float rdo = 0;
+    protected String Tabla(int numero) {
 
-        switch (operacion) {
-            case "sumar": {
-                rdo = n1 + n2;
-                break;
-            }
-            case "restar": {
-                rdo = n1 - n2;
-                break;
-            }
-            case "multiplicar": {
-                rdo = n1 * n2;
-                break;
-            }
-            case "dividir": {
-                rdo = n1 / n2;
-                break;
-            }
+        String html = "";
+
+        html += "<table>";
+        html += "<tr><th>TABLA DE MULTIPLICAR DEL " + numero + "</th></tr>";
+        for (int i = 1; i <= 10; i++) {
+            html += "<tr><td>";
+            html += numero + " x " + i + " = " + numero * i;
+            html += "</td></tr>";
         }
-
-        return String.valueOf(rdo);
-
+        html += "</table>";
+        return html;
     }
-    
-   
+
+    protected String Tablas() {
+
+        String html = "";
+
+        html += "<h2>TABLA DE MULTIPLICAR</h2>";
+        html += "<table class='todas'>";
+
+        for (int i = 1; i <= 10; i++) {
+
+            //Para que haga muestra dos líneas
+            if (i == 1) {
+                html += "<tr>";
+            } else if (i == 6) {
+                html += "</tr>";
+            }
+
+            html += "<td class='todas'>";
+            for (int j = 1; j <= 10; j++) {
+                html += i + " x " + j + " = " + (i * j) + "<br>";
+            }
+
+            html += "</td>";
+
+        }
+        html += "</table>";
+        return html;
+    }
+
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.

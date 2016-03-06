@@ -4,9 +4,17 @@
         <servlet-name>Calculadora</servlet-name>
         <servlet-class>PracticaJavaEE.Calculadora</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>TablasMultiplicar</servlet-name>
+        <servlet-class>PracticaJavaEE.TablasMultiplicar</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Calculadora</servlet-name>
-        <url-pattern>/Calculadora</url-pattern>
+        <url-pattern>/Calc</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>TablasMultiplicar</servlet-name>
+        <url-pattern>/Tablas</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

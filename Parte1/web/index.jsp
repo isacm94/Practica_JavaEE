@@ -16,6 +16,7 @@
     <center>
         <h1>Menú</h1>
         <li><a href="Calculadora.jsp">Calculadora</a></li>
-        </center>
-    </body>
+        <li><a href="TablasMultiplicar.jsp">Tablas de Multiplicar</a></li>
+    </center>
+</body>
 </html>

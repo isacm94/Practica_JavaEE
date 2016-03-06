@@ -1,0 +1,40 @@
+.error{
+    color: red;
+}
+
+body{
+    font-family: sans-serif;
+}
+
+/*
+table {   
+    border: 1px solid #000;
+    border-collapse: collapse;
+    width: 60%;
+    max-width: 260px;
+    min-width: 260px;
+}
+th, td {
+    width: 50px;
+    border: 1px solid #000;
+    padding: 5px;
+}*/
+
+table.todas {   
+    border: 1px solid #000;
+    border-collapse: collapse;
+    width: 60%;
+    max-width: 100%;
+    min-width: 100%;
+}
+th.todas, td.todas {
+    width: 50px;
+    border: 1px solid #000;
+    padding: 5px;
+}
+
+tr.todas {
+    width: 50px;
+    border: 1px solid #000;
+    padding: 5px;
+}

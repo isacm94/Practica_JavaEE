@@ -82,8 +82,8 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Calculadora</title>
-        <link rel="stylesheet" type="text/css" href="estilos.css" media="screen" />
-        <link rel="icon" href="calc.jpg" type="image/gif" sizes="16x16">
+        <link rel="stylesheet" type="text/css" href="assets/estilos.css" media="screen" />
+        <link rel="icon" href="assets/calc.jpg" type="image/gif" sizes="16x16">
     </head>
     <body>
     <center>
@@ -96,7 +96,7 @@
             }
         %>
 
-        <form action="Calculadora" method="post"> <!--Lo mandamos al servlet Calculadora.java-->
+        <form action="Calc" method="post"> <!--Lo mandamos al servlet Calculadora.java-->
             <p>
                 Número 1:
                 <input type="text" name="num1" value="<%=num1%>"/>
