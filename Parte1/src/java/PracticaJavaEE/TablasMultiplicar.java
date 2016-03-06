@@ -7,7 +7,6 @@ package PracticaJavaEE;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import static java.lang.System.out;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -29,62 +28,24 @@ public class TablasMultiplicar extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    @SuppressWarnings("empty-statement")
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        //Recogemos datos enviados por post
-        String numero = request.getParameter("numero");
-        String btn_mostrar = request.getParameter("mostrar");//Mostrar 1 tabla
-        String btn_mostrartodas = request.getParameter("mostrartodas");//Mostrar todas tabla
-        String tabla = "";
-        String error = "";
-
-        int num = -1;
-        try {
-            num = Integer.parseInt(numero);
-        } catch (Exception e) {
-            error = "Debe ser un número";
-        }
-
-        if (! btn_mostrar.equals("") && error.equals("")) {//Boton pulsado --> Mostrar una tabla, y no se ha producido un error 
-            tabla = Tabla(num);
-        }
-        else if (! btn_mostrartodas.equals("")) {//Boton pulsado --> Mostrar una tabla, y no se ha producido un error 
-            tabla = Tablas();
-        }
-
-        //Pasamos los datos a Calculadora.jsp
         RequestDispatcher dispatcher = request.getRequestDispatcher("/TablasMultiplicar.jsp");
 
-        request.setAttribute("numero", numero);
+        String tabla = Tablas();
         request.setAttribute("tabla", tabla);
-        request.setAttribute("error", error);
-        request.setAttribute("btn_mostrar", btn_mostrar);
-        request.setAttribute("btn_mostrartodas", btn_mostrartodas);
         dispatcher.forward(request, response);//Redirigimos al formulario de la tabla de multiplicar
     }
 
-    protected String Tabla(int numero) {
-
-        String html = "";
-
-        html += "<table>";
-        html += "<tr><th>TABLA DE MULTIPLICAR DEL " + numero + "</th></tr>";
-        for (int i = 1; i <= 10; i++) {
-            html += "<tr><td>";
-            html += numero + " x " + i + " = " + numero * i;
-            html += "</td></tr>";
-        }
-        html += "</table>";
-        return html;
-    }
-
+    /**
+     * Devuelve las tablas del 1 al 10
+     * @return HTML generado de la tabla
+     */
     protected String Tablas() {
 
         String html = "";
 
-        html += "<h2>TABLA DE MULTIPLICAR</h2>";
         html += "<table class='todas'>";
 
         for (int i = 1; i <= 10; i++) {
@@ -98,6 +59,9 @@ public class TablasMultiplicar extends HttpServlet {
 
             html += "<td class='todas'>";
             for (int j = 1; j <= 10; j++) {
+                if (j == 1) {
+                    html += "<b>Tabla de multiplicar del " + i + "</b><br><hr>";
+                }
                 html += i + " x " + j + " = " + (i * j) + "<br>";
             }
 

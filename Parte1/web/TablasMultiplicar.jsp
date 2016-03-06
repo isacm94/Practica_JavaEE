@@ -7,8 +7,6 @@
 <%! String tabla = "";
     String numero = "";
     String error = "";
-    String btn_mostrar = "";
-    String btn_mostrartodas = "";
 %>
 <%--Asignamos las variables si no son nulas, ya que la 1ª vez que se accede a la app son nulas --%>
 <%
@@ -23,12 +21,6 @@
     if (request.getAttribute("error") != null) {
         error = (String) request.getAttribute("error");
     }
-    if (request.getAttribute("btn_mostrar") != null) {
-        btn_mostrar = (String) request.getAttribute("btn_mostrar");
-    }
-    if (request.getAttribute("btn_mostrartodas") != null) {
-        btn_mostrartodas = (String) request.getAttribute("btn_mostrartodas");
-    }
 %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -42,7 +34,7 @@
     <body>
     <center>
         <h1>Tablas de Multiplicar</h1>
-        <form action="Tablas" method="post"> <!--Lo mandamos al servlet TablasMultiplicar.java-->
+        <form action="Tabla" method="post"> <!--Lo mandamos al servlet TablaMultiplicar.java-->
             <p>
                 Número:
                 <input type="text" name="numero" value="<%=numero%>"/>                
@@ -55,22 +47,22 @@
                     }
                 %>
             </p>
+        </form>
 
+        <form action="Tablas" method="post"><!--Lo mandamos al servlet TablasMultiplicar.java-->
             <p>
                 <input type="submit" name="mostrartodas" value="Motrar todas las tablas" />
             </p>
-
-            <%--Mostramos la tabla generada --%>
-            <%  if (!tabla.equals("")) {
-                    out.println(tabla);
-                }
-
-                out.println("btn_mostrar --> " + btn_mostrar);
-                out.println("btn_mostrartodas --> " + btn_mostrartodas);
-            %>
-
-
         </form>
+            
+        <%--Mostramos la tabla generada --%>
+        <%  if (!tabla.equals("")) {
+                out.println(tabla);
+            }
+        %>
+
+
+
     </center>
 </body>
 </html>

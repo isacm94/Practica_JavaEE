@@ -10,7 +10,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Menú</title>      
-        <link rel="stylesheet" type="text/css" href="estilos.css" media="screen" />
+        <link rel="stylesheet" type="text/css" href="assets/estilos.css" media="screen" />
     </head>
     <body>
     <center>

@@ -5,12 +5,20 @@
         <servlet-class>PracticaJavaEE.Calculadora</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>TablaMultiplicar</servlet-name>
+        <servlet-class>PracticaJavaEE.TablaMultiplicar</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>TablasMultiplicar</servlet-name>
         <servlet-class>PracticaJavaEE.TablasMultiplicar</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Calculadora</servlet-name>
         <url-pattern>/Calc</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>TablaMultiplicar</servlet-name>
+        <url-pattern>/Tabla</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>TablasMultiplicar</servlet-name>

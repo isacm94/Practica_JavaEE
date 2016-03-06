@@ -37,15 +37,14 @@
 <%!
 
     /**
-     * Devuelve selected si un campo es el que ha sido seleccionado
+     * Devuelve selected si un campo de un select/lista desplegable, es el que ha sido seleccionado
      */
     public String checkSelected(String campo) {
-        String selected = "";
 
         if (campo.equals(operacion)) {//Si el campo es igual al que está guardado lo seleccionamos
-            selected = " selected ";
+           return " selected ";
         }
-        return selected;
+        return "";
     }
 
     /**

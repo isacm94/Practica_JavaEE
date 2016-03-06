@@ -79,6 +79,14 @@ public class Calculadora extends HttpServlet {
         dispatcher.forward(request, response);//Redirigimos al formulario de la calculadora
     }
 
+    
+   /**
+    * Devuelve el resultado de una operación matemática
+    * @param n1 Primer operando de la operación
+    * @param n2 Segundo operando de la operación
+    * @param operacion Operador
+    * @return String Resultado
+    */
     public String Resultado(float n1, float n2, String operacion) {
         float rdo = 0;
 
@@ -101,7 +109,7 @@ public class Calculadora extends HttpServlet {
             }
         }
 
-        return String.valueOf(rdo);
+        return String.valueOf(rdo);//Convertimos a string
 
     }
     

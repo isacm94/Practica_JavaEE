@@ -6,20 +6,21 @@ body{
     font-family: sans-serif;
 }
 
-/*
+/*Cuando se muestra una sola tabla de multiplicar*/
 table {   
     border: 1px solid #000;
     border-collapse: collapse;
     width: 60%;
-    max-width: 260px;
-    min-width: 260px;
+    max-width: 270px;
+    min-width: 270px;
 }
 th, td {
     width: 50px;
     border: 1px solid #000;
     padding: 5px;
-}*/
+}
 
+/*Cuando se muestra todas las tabla de multiplicar*/
 table.todas {   
     border: 1px solid #000;
     border-collapse: collapse;
