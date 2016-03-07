@@ -12,6 +12,14 @@
         <servlet-name>TablasMultiplicar</servlet-name>
         <servlet-class>PracticaJavaEE.TablasMultiplicar</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>Login</servlet-name>
+        <servlet-class>PracticaJavaEE.Login</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>LogOut</servlet-name>
+        <servlet-class>PracticaJavaEE.LogOut</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Calculadora</servlet-name>
         <url-pattern>/Calc</url-pattern>
@@ -23,6 +31,14 @@
     <servlet-mapping>
         <servlet-name>TablasMultiplicar</servlet-name>
         <url-pattern>/Tablas</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Login</servlet-name>
+        <url-pattern>/Login</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LogOut</servlet-name>
+        <url-pattern>/LogOut</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

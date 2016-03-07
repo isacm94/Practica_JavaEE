@@ -3,6 +3,10 @@
     Created on : 04-mar-2016, 16:12:07
     Author     : 2DAW
 --%>
+<%  HttpSession s2 = request.getSession(); %>
+<% if(s2.getAttribute("username") == null){//Sesion NO INICIADA%>
+    <%@ include file="index.jsp"%><%--Vamos al login --%>
+<% } else { %>
 <%--Declaramos las variables --%>
 <%! String num1 = "";
     String num2 = "";
@@ -37,12 +41,13 @@
 <%!
 
     /**
-     * Devuelve selected si un campo de un select/lista desplegable, es el que ha sido seleccionado
+     * Devuelve selected si un campo de un select/lista desplegable, es el que
+     * ha sido seleccionado
      */
     public String checkSelected(String campo) {
 
         if (campo.equals(operacion)) {//Si el campo es igual al que está guardado lo seleccionamos
-           return " selected ";
+            return " selected ";
         }
         return "";
     }
@@ -85,11 +90,11 @@
         <link rel="icon" href="assets/calc.jpg" type="image/gif" sizes="16x16">
     </head>
     <body>
+        <%@ include file="Menu.jsp"%><%--Incluimos menú --%>
     <center>
-        <h1>CALCULADORA</h1>
+        <h1>Calculadora</h1>
         <%--Mostramos el resultado --%>
-        <%            
-            if (resultado != "") {
+        <%            if (resultado != "") {
                 out.println("<h2>Resultado de la operación: </h2>");
                 out.println("<h2>" + num1 + getOperador() + num2 + " = " + resultado + "</h2>");
             }
@@ -132,6 +137,8 @@
     </center>
 </body>
 </html>
+
+<% }%>
 
 
 

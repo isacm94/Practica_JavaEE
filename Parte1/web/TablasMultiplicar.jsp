@@ -6,7 +6,7 @@
 <%--Declaramos las variables --%>
 <%! String tabla = "";
     String numero = "";
-    String error = "";
+    String error_msg = "";
 %>
 <%--Asignamos las variables si no son nulas, ya que la 1ª vez que se accede a la app son nulas --%>
 <%
@@ -19,7 +19,7 @@
     }
 
     if (request.getAttribute("error") != null) {
-        error = (String) request.getAttribute("error");
+        error_msg = (String) request.getAttribute("error");
     }
 %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -32,6 +32,7 @@
         <link rel="icon" href="assets/tablas.png" type="image/gif" sizes="16x16">
     </head>
     <body>
+        <%@ include file="Menu.jsp"%><%--Incluimos menú --%>
     <center>
         <h1>Tablas de Multiplicar</h1>
         <form action="Tabla" method="post"> <!--Lo mandamos al servlet TablaMultiplicar.java-->
@@ -40,9 +41,9 @@
                 <input type="text" name="numero" value="<%=numero%>"/>                
                 <input type="submit" name="mostrar" value="Mostrar tabla" />
 
-                <%  if (!error.equals("")) {
+                <%  if (!error_msg.equals("")) {
                         out.println("<span class='error'>");
-                        out.println(error);
+                        out.println(error_msg);
                         out.println("</span>");
                     }
                 %>
@@ -54,15 +55,12 @@
                 <input type="submit" name="mostrartodas" value="Motrar todas las tablas" />
             </p>
         </form>
-            
+
         <%--Mostramos la tabla generada --%>
         <%  if (!tabla.equals("")) {
                 out.println(tabla);
             }
         %>
-
-
-
     </center>
 </body>
 </html>
