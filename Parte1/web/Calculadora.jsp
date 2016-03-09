@@ -1,12 +1,4 @@
-<%-- 
-    Document   : index
-    Created on : 04-mar-2016, 16:12:07
-    Author     : 2DAW
---%>
-<%  HttpSession s2 = request.getSession(); %>
-<% if(s2.getAttribute("username") == null){//Sesion NO INICIADA%>
-    <%@ include file="index.jsp"%><%--Vamos al login --%>
-<% } else { %>
+
 <%--Declaramos las variables --%>
 <%! String num1 = "";
     String num2 = "";
@@ -138,7 +130,7 @@
 </body>
 </html>
 
-<% }%>
+
 
 
 

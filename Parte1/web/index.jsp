@@ -1,18 +1,9 @@
 <%-- 
-    Document   : login.sp
+    Document   : login.jsp
     Created on : 07-mar-2016, 15:43:35
     Author     : 2DAW
 --%>
-<%--Declaramos las variables --%>
-<%! 
-    String error = "";
-%>
-<%--Asignamos las variables si no son nulas, ya que la 1ª vez que se accede a la app son nulas --%>
-<%
-    if (request.getAttribute("error") != null) {
-        error = (String) request.getAttribute("error");
-    }
-%>
+
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -35,9 +26,9 @@
                 Contraseña:
                 <input type="password" name="pass" value=""/>                
             </p>
-            <%  if (!error.equals("")) {
+            <%  if ( request.getAttribute("Error") != null) { //Si se ha producido un error mostramos el mensaje
                     out.println("<div class='error'>");
-                    out.println(error);
+                    out.println(request.getAttribute("Error"));
                     out.println("</div>");
                 }
             %>

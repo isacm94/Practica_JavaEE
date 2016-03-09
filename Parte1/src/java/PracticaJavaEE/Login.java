@@ -36,7 +36,7 @@ public class Login extends HttpServlet {
         String pass = request.getParameter("pass");
 
         Boolean sesionIniciada = false;
-        String error = "";
+        String Error = "";
 
         HttpSession sesion = request.getSession();
 
@@ -45,7 +45,7 @@ public class Login extends HttpServlet {
             sesion.setAttribute("username", username);
             sesionIniciada = true;
         } else {
-            error = "Usuario o contraseña incorrectos";
+            Error = "Usuario o contraseña incorrectos";
             sesionIniciada = false;
         }
 
@@ -54,7 +54,7 @@ public class Login extends HttpServlet {
             RequestDispatcher dispatcher = request.getRequestDispatcher("/index.jsp");
 
             request.setAttribute("username", username);
-            request.setAttribute("error", error);
+            request.setAttribute("Error", Error);
             dispatcher.forward(request, response);//Redirigimos al formulario de la calculadora
         } else {
             response.sendRedirect("Menu.jsp");
