@@ -1,0 +1,23 @@
+.error{
+    color: red;
+    font-weight: bold;
+}
+
+body{
+    font-family: sans-serif;
+}
+
+/*Cuando se muestra una sola tabla de multiplicar*/
+table {   
+    border: 1px solid #000;
+    border-collapse: collapse;
+    width: 60%;
+    max-width: 500px;
+    min-width: 500px;
+}
+th, td {
+    width: 50px;
+    border: 1px solid #000;
+    padding: 5px;
+}
+

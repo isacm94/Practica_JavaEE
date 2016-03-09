@@ -3,6 +3,10 @@
     Created on : 06-mar-2016, 10:16:59
     Author     : Isabel
 --%>
+<%  HttpSession s2 = request.getSession(); %>
+<% if (s2.getAttribute("username") == null) {//Sesion NO INICIADA%>
+<%@ include file="index.jsp"%><%--Vamos al login --%>
+<% } else { %>
 <%--Declaramos las variables --%>
 <%! String tabla = "";
     String numero = "";
@@ -64,3 +68,4 @@
     </center>
 </body>
 </html>
+<% } %>

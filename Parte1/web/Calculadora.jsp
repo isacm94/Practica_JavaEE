@@ -1,4 +1,7 @@
-
+<%  HttpSession s3 = request.getSession(); %>
+<% if (s3.getAttribute("username") == null) {//Sesion NO INICIADA%>
+<%@ include file="index.jsp"%><%--Vamos al login --%>
+<% } else { %>
 <%--Declaramos las variables --%>
 <%! String num1 = "";
     String num2 = "";
@@ -129,6 +132,7 @@
     </center>
 </body>
 </html>
+<% } %>
 
 
 

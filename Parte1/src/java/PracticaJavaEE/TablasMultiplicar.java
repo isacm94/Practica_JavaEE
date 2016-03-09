@@ -50,7 +50,7 @@ public class TablasMultiplicar extends HttpServlet {
 
         for (int i = 1; i <= 10; i++) {
 
-            //Para que haga muestra dos líneas
+            //Para que muestre dos líneas
             if (i == 1) {
                 html += "<tr>";
             } else if (i == 6) {
