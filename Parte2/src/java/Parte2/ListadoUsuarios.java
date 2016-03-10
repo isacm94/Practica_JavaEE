@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -28,6 +29,47 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet(name = "ListadoUsuarios", urlPatterns = {"/ListadoUsuarios"})
 public class ListadoUsuarios extends HttpServlet {
+
+    private Statement statement = null;
+    private Connection conexion = null;
+
+    @Override
+    public void init(ServletConfig config) {
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            conexion = DriverManager.getConnection("jdbc:mysql://localhost:3306/usuarios?zeroDateTimeBehavior=convertToNull", "root", "");
+            statement = conexion.createStatement();
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(ListadoUsuarios.class.getName()).log(Level.SEVERE,
+                    "No se pudo cargar el driver de la base de datos", ex);
+            //System.out.println("Error al cargar el driver");
+        } catch (SQLException ex) {
+            Logger.getLogger(ListadoUsuarios.class.getName()).log(Level.SEVERE,
+                    "No se pudo obtener la conexión a la base de datos", ex);
+            //System.out.println("Error al obtener la conexión a la base de datos");
+        }
+    }
+
+    @Override
+    public void destroy() {
+        try {
+            statement.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(ListadoUsuarios.class.getName()).log(Level.SEVERE,
+                    "No se pudo cerrar el objeto Statement", ex);
+
+            System.out.println("Error, no se pudo cerrar el objeto Statement");
+        } finally {
+            try {
+                conexion.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(ListadoUsuarios.class.getName()).log(Level.SEVERE,
+                        "No se pudo cerrar el objeto Conexion", ex);
+            }
+
+            System.out.println("Error, no se pudo cerrar el objeto Conexion");
+        }
+    }
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -43,137 +85,82 @@ public class ListadoUsuarios extends HttpServlet {
 
         //Variables
         String tabla = "";
-        int num = -1;
-        String idprov = null;
+        int numUsuarios = -1;
+
+        int inicio = 0;
         
-        try{
-            idprov = request.getParameter("prov");
-        }catch(Exception e){
-            idprov = null;
-        };
-        
-        if (idprov == null) {
-            tabla = GetTabla();
-            num = GetNumUsuarios();
-        } else if (! idprov.equals(null)) {
-            tabla = GetTabla(idprov);
-            num = GetNumUsuarios(idprov);
+        if(request.getParameter("inicio") == null){
+            inicio = 0;
         }
+        else{
+            inicio = Integer.parseInt(request.getParameter("inicio"));
+        }
+        
+        tabla = GetTabla(inicio);
+        numUsuarios = GetNumUsuarios();
 
         //Pasamos los datos a ListadoUsuarios.jsp
         RequestDispatcher dispatcher = request.getRequestDispatcher("/ListadoUsuarios.jsp");
 
         request.setAttribute("tabla", tabla);
-        request.setAttribute("num", num);
+        request.setAttribute("numUsuarios", numUsuarios);
+        request.setAttribute("inicio", inicio);
+   
         dispatcher.forward(request, response);//Redirigimos a ListadoUsuarios
     }
 
-    protected String GetTabla() {
+    protected String GetTabla(int inicio) {
         String tabla = "";
-
-        //CARGAMOS EL DRIVER
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException ex) {
-            System.out.println("Error al cargar el driver");
-            System.out.println(ex.getMessage());
-        }
-        //CREAMOS LA CONEXIÓN
-        Connection conexion = null;
-        try {
-            conexion = DriverManager.getConnection("jdbc:mysql://localhost:3306/usuarios?zeroDateTimeBehavior=convertToNull", "root", "");
-        } catch (SQLException sqlEx) {
-            System.out.println("Se ha producido un error al establecer la conexión");
-            System.out.println(sqlEx.getMessage());
-        }
-
-        //CREAMOS EL STATEMENT
-        Statement stmt = null;
-
-        try {
-            stmt = conexion.createStatement();
-        } catch (SQLException sql) {
-            System.out.println("Se produjo un error creando Statement");
-            System.out.println(sql.getMessage());
-        }
 
         //HACEMOS LA CONSULTA
         ResultSet listado = null;
         try {
-//            listado = stmt.executeQuery("SELECT * "
-//                    + "FROM t_usuarios;");
-
-            listado = stmt.executeQuery("SELECT u.nombre 'nombre', u.apellido1 'apellido1', u.apellido2 'apellido2', p.nombre 'provincia', prov_cod 'id' "
-                    + "FROM usuarios.t_usuarios u  INNER JOIN t_provincias p "
-                    + "ON u.prov_cod = p.cod "
-                    + "ORDER BY u.nombre "
-                    + "LIMIT 0, 20;");
-
+            synchronized (statement) {
+                listado = statement.executeQuery("SELECT u.id 'id', u.nombre 'nombre', u.apellido1 'apellido1', u.apellido2 'apellido2', p.nombre 'provincia', prov_cod 'id' "
+                        + "FROM usuarios.t_usuarios u  INNER JOIN t_provincias p "
+                        + "ON u.prov_cod = p.cod "
+                        + "ORDER BY u.nombre "
+                        + "LIMIT "+ inicio +", 20;");
+            }
         } catch (SQLException ex) {
             System.out.println("Se produjo un error haciendo una consulta");
         }
 
         //RECORREMOS EL RESULTADO Y CREAMOS LA TABLA
         tabla += "<table>";
-        tabla += "\n\t<tr>\t<th>NOMBRE</th>\t<th>APELLIDO 1</th>\t<th>APELLIDO 2</th>\t<th>PROVINCIA</th></tr>";
+        tabla += "\n\t<tr>\t<th>#</th>\t<th>NOMBRE</th>\t<th>APELLIDO 1</th>\t<th>APELLIDO 2</th>\t<th>PROVINCIA</th></tr>";
+        
+        int cont = inicio + 1;
+        
         try {
             while (listado.next()) {
                 tabla += "\n\t<tr>";
-                tabla += "\n\t\t<td>" + listado.getString("nombre") + "</td>"
+                tabla += "\n\t\t<td>" + cont + "</td>" 
+                        + "\n\t\t<td>" + listado.getString("nombre") + "</td>"
                         + "\n\t\t<td>" + listado.getString("apellido1") + "</td>"
                         + "\n\t\t<td>" + listado.getString("apellido2") + "</td>"
-                        + "\n\t\t<td><a href='?provincia=" + listado.getString("id") + "'>" + listado.getString("provincia") + "</a></td>";
+                        + "\n\t\t<td>" + listado.getString("provincia") + "</td>";
                 tabla += "\n\t</tr>";
+                
+                cont++;
             }
         } catch (SQLException ex) {
             System.out.println("Se ha producido un error leyendo el listado");
         }
         tabla += "</table>";
-        //CERRAMOS LA CONEXION
-        try {
-            conexion.close();
-        } catch (SQLException ex) {
-            System.out.println("Se ha producido un error cerrando la conexión");
-        }
 
         return tabla;
     }
 
     protected int GetNumUsuarios() {
-        //CARGAMOS EL DRIVER
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException ex) {
-            System.out.println("Error al cargar el driver");
-            System.out.println(ex.getMessage());
-        }
-        //CREAMOS LA CONEXIÓN
-        Connection conexion = null;
-        try {
-            conexion = DriverManager.getConnection("jdbc:mysql://localhost:3306/usuarios?zeroDateTimeBehavior=convertToNull", "root", "");
-        } catch (SQLException sqlEx) {
-            System.out.println("Se ha producido un error al establecer la conexión");
-            System.out.println(sqlEx.getMessage());
-        }
-
-        //CREAMOS EL STATEMENT
-        Statement stmt = null;
-
-        try {
-            stmt = conexion.createStatement();
-        } catch (SQLException sql) {
-            System.out.println("Se produjo un error creando Statement");
-            System.out.println(sql.getMessage());
-        }
 
         //HACEMOS LA CONSULTA
         ResultSet listado = null;
         try {
-//            listado = stmt.executeQuery("SELECT * "
-//                    + "FROM t_usuarios;");
-
-            listado = stmt.executeQuery("SELECT count(id) 'num' "
-                    + "FROM usuarios.t_usuarios;");
+            synchronized (statement) {
+                listado = statement.executeQuery("SELECT count(id) 'num' "
+                        + "FROM usuarios.t_usuarios;");
+            }
         } catch (SQLException ex) {
             System.out.println("Se produjo un error haciendo una consulta");
         }
@@ -186,145 +173,6 @@ public class ListadoUsuarios extends HttpServlet {
             }
         } catch (SQLException ex) {
             System.out.println("Se ha producido un error leyendo el listado");
-        }
-
-        //CERRAMOS LA CONEXION
-        try {
-            conexion.close();
-        } catch (SQLException ex) {
-            System.out.println("Se ha producido un error cerrando la conexión");
-        }
-
-        return Integer.parseInt(num);
-    }
-    
-    protected String GetTabla(String id) {
-        String tabla = "";
-
-        //CARGAMOS EL DRIVER
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException ex) {
-            System.out.println("Error al cargar el driver");
-            System.out.println(ex.getMessage());
-        }
-        //CREAMOS LA CONEXIÓN
-        Connection conexion = null;
-        try {
-            conexion = DriverManager.getConnection("jdbc:mysql://localhost:3306/usuarios?zeroDateTimeBehavior=convertToNull", "root", "");
-        } catch (SQLException sqlEx) {
-            System.out.println("Se ha producido un error al establecer la conexión");
-            System.out.println(sqlEx.getMessage());
-        }
-
-        //CREAMOS EL STATEMENT
-        Statement stmt = null;
-
-        try {
-            stmt = conexion.createStatement();
-        } catch (SQLException sql) {
-            System.out.println("Se produjo un error creando Statement");
-            System.out.println(sql.getMessage());
-        }
-
-        //HACEMOS LA CONSULTA
-        ResultSet listado = null;
-        try {
-//            listado = stmt.executeQuery("SELECT * "
-//                    + "FROM t_usuarios;");
-
-            listado = stmt.executeQuery("SELECT u.nombre 'nombre', u.apellido1 'apellido1', u.apellido2 'apellido2', p.nombre 'provincia', prov_cod 'id' "
-                    + "FROM usuarios.t_usuarios u  INNER JOIN t_provincias p "
-                    + "WHERE u.prov_cod LIKE '"+id+"' "
-                    + "ON u.prov_cod = p.cod "
-                    + "ORDER BY u.nombre "
-                    + "LIMIT 0, 20;");
-
-        } catch (SQLException ex) {
-            System.out.println("Se produjo un error haciendo una consulta");
-        }
-
-        //RECORREMOS EL RESULTADO Y CREAMOS LA TABLA
-        tabla += "<table>";
-        tabla += "\n\t<tr>\t<th>NOMBRE</th>\t<th>APELLIDO 1</th>\t<th>APELLIDO 2</th>\t<th>PROVINCIA</th></tr>";
-        try {
-            while (listado.next()) {
-                tabla += "\n\t<tr>";
-                tabla += "\n\t\t<td>" + listado.getString("nombre") + "</td>"
-                        + "\n\t\t<td>" + listado.getString("apellido1") + "</td>"
-                        + "\n\t\t<td>" + listado.getString("apellido2") + "</td>"
-                        + "\n\t\t<td><a href='?prov=" + listado.getString("id") + "'>" + listado.getString("provincia") + "</a></td>";
-                tabla += "\n\t</tr>";
-            }
-        } catch (SQLException ex) {
-            System.out.println("Se ha producido un error leyendo el listado");
-        }
-        tabla += "</table>";
-        //CERRAMOS LA CONEXION
-        try {
-            conexion.close();
-        } catch (SQLException ex) {
-            System.out.println("Se ha producido un error cerrando la conexión");
-        }
-
-        return tabla;
-    }
-
-    protected int GetNumUsuarios(String id) {
-        //CARGAMOS EL DRIVER
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException ex) {
-            System.out.println("Error al cargar el driver");
-            System.out.println(ex.getMessage());
-        }
-        //CREAMOS LA CONEXIÓN
-        Connection conexion = null;
-        try {
-            conexion = DriverManager.getConnection("jdbc:mysql://localhost:3306/usuarios?zeroDateTimeBehavior=convertToNull", "root", "");
-        } catch (SQLException sqlEx) {
-            System.out.println("Se ha producido un error al establecer la conexión");
-            System.out.println(sqlEx.getMessage());
-        }
-
-        //CREAMOS EL STATEMENT
-        Statement stmt = null;
-
-        try {
-            stmt = conexion.createStatement();
-        } catch (SQLException sql) {
-            System.out.println("Se produjo un error creando Statement");
-            System.out.println(sql.getMessage());
-        }
-
-        //HACEMOS LA CONSULTA
-        ResultSet listado = null;
-        try {
-//            listado = stmt.executeQuery("SELECT * "
-//                    + "FROM t_usuarios;");
-
-            listado = stmt.executeQuery("SELECT count(id) 'num' "
-                    + "FROM usuarios.t_usuarios "
-                     + "WHERE u.prov_cod LIKE '"+id+"' ");
-        } catch (SQLException ex) {
-            System.out.println("Se produjo un error haciendo una consulta");
-        }
-
-        //RECORREMOS EL RESULTADO Y CREAMOS LA TABLA
-        String num = "";
-        try {
-            while (listado.next()) {
-                num = listado.getString("num");
-            }
-        } catch (SQLException ex) {
-            System.out.println("Se ha producido un error leyendo el listado");
-        }
-
-        //CERRAMOS LA CONEXION
-        try {
-            conexion.close();
-        } catch (SQLException ex) {
-            System.out.println("Se ha producido un error cerrando la conexión");
         }
 
         return Integer.parseInt(num);

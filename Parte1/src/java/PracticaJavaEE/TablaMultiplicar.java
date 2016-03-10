@@ -44,9 +44,12 @@ public class TablaMultiplicar extends HttpServlet {
         try {
             num = Integer.parseInt(numero);
         } catch (Exception e) {
-            error = "Debe ser un número";
+            error = "** ERROR ** Introduzca un número válido entre 1 y 100";
         }
-
+        
+        if(num < 1 || num > 100)
+            error = "** ERROR ** Introduzca un número válido entre 1 y 100";
+        
         if (error.equals("")) {//No se ha producido un error 
             tabla = Tabla(num);
         }

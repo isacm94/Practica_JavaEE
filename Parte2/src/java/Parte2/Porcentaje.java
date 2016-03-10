@@ -12,7 +12,10 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -25,6 +28,45 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet(name = "Porcentaje", urlPatterns = {"/Porcentaje"})
 public class Porcentaje extends HttpServlet {
+
+    private Statement statement = null;
+    private Connection conexion = null;
+
+    @Override
+    public void init(ServletConfig config) {
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            conexion = DriverManager.getConnection("jdbc:mysql://localhost:3306/usuarios?zeroDateTimeBehavior=convertToNull", "root", "");
+            statement = conexion.createStatement();
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Porcentaje.class.getName()).log(Level.SEVERE,
+                    "No se pudo cargar el driver de la base de datos", ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(Porcentaje.class.getName()).log(Level.SEVERE,
+                    "No se pudo obtener la conexión a la base de datos", ex);
+        }
+    }
+
+    @Override
+    public void destroy() {
+        try {
+            statement.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(ListadoUsuarios.class.getName()).log(Level.SEVERE,
+                    "No se pudo cerrar el objeto Statement", ex);
+
+            System.out.println("Error, no se pudo cerrar el objeto Statement");
+        } finally {
+            try {
+                conexion.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(ListadoUsuarios.class.getName()).log(Level.SEVERE,
+                        "No se pudo cerrar el objeto Conexion", ex);
+            }
+
+            System.out.println("Error, no se pudo cerrar el objeto Conexion");
+        }
+    }
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -42,16 +84,26 @@ public class Porcentaje extends HttpServlet {
         String select = "";
         String tabla = "";
         String idprov = request.getParameter("provincia");
-        String num = "-1";
-
+        int numUsuarios = 0;
+        int numApellidos = 0;
         select = CreaSelect(idprov);
 
-        if (idprov.equals("todas") || idprov == null) {
-            tabla = GetTabla();
-            num = GetNumUsuarios();
-        } else if (!idprov.equals(null)) {
-            tabla = GetTabla(idprov);
-            num = GetNumUsuarios(idprov);
+        int inicio = 0;
+
+        if (request.getParameter("inicio") == null) {
+            inicio = 0;
+        } else {
+            inicio = Integer.parseInt(request.getParameter("inicio"));
+        }
+
+        if (idprov == null || idprov.equals("todas")) {
+            tabla = GetTabla(inicio);
+            numUsuarios = GetNumUsuarios();
+            numApellidos = GetNumApellidos();
+        } else if (idprov != null) {
+            tabla = GetTabla(idprov, inicio);
+            numUsuarios = GetNumUsuarios(idprov);
+            numApellidos = GetNumApellidos(idprov);
         }
 
         //Pasamos los datos a Porcentaje.jsp
@@ -59,116 +111,65 @@ public class Porcentaje extends HttpServlet {
 
         request.setAttribute("select", select);
         request.setAttribute("tabla", tabla);
-        request.setAttribute("num", num);
+        request.setAttribute("numUsuarios", numUsuarios);
+        request.setAttribute("numApellidos", numApellidos);
+        request.setAttribute("inicio", inicio);
+        request.setAttribute("provincia", idprov);
         dispatcher.forward(request, response);//Redirigimos a Porcentaje.jsp
     }
 
-    protected String GetTabla() {
+    protected String GetTabla(int inicio) {
         String tabla = "";
-
-        //CARGAMOS EL DRIVER
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException ex) {
-            System.out.println("Error al cargar el driver");
-            System.out.println(ex.getMessage());
-        }
-        //CREAMOS LA CONEXIÓN
-        Connection conexion = null;
-        try {
-            conexion = DriverManager.getConnection("jdbc:mysql://localhost:3306/usuarios?zeroDateTimeBehavior=convertToNull", "root", "");
-        } catch (SQLException sqlEx) {
-            System.out.println("Se ha producido un error al establecer la conexión");
-            System.out.println(sqlEx.getMessage());
-        }
-
-        //CREAMOS EL STATEMENT
-        Statement stmt = null;
-
-        try {
-            stmt = conexion.createStatement();
-        } catch (SQLException sql) {
-            System.out.println("Se produjo un error creando Statement");
-            System.out.println(sql.getMessage());
-        }
 
         //HACEMOS LA CONSULTA
         ResultSet listado = null;
         try {
-//            listado = stmt.executeQuery("SELECT * "
-//                    + "FROM t_usuarios;");
-
-            listado = stmt.executeQuery("select distinct apellido1, "
-                    + "count(apellido1) as total, "
-                    + "(count(apellido1)*100)/(select count(*) from t_usuarios) as porcentaje "
-                    + "from t_usuarios "
-                    + "group by apellido1 "
-                    + "order by total desc");
+            synchronized (statement) {
+                listado = statement.executeQuery("select distinct apellido1, "
+                        + "count(apellido1) as total, "
+                        + "(count(apellido1)*100)/(select count(*) from t_usuarios) as porcentaje "
+                        + "FROM t_usuarios "
+                        + "group by apellido1 "
+                        + "order by total desc "
+                        + "LIMIT " + inicio + ", 20");
+            }
 
         } catch (SQLException ex) {
             System.out.println("Se produjo un error haciendo una consulta");
         }
 
+        int cont = inicio + 1;
         //RECORREMOS EL RESULTADO Y CREAMOS LA TABLA
         tabla += "<table>";
-        tabla += "<tr><th>APELLIDO 1</th><th>TOTAL</th><th>PORCENTAJE</th></tr>";
+        tabla += "<tr><th>#</th><th>APELLIDO 1</th><th>TOTAL</th><th>PORCENTAJE</th></tr>";
         try {
             while (listado.next()) {
                 tabla += "<tr>";
-                tabla += "<td>" + listado.getString("apellido1") + "</td>"
+                tabla += "<td>" + cont + "</td>"
+                        + "<td>" + listado.getString("apellido1") + "</td>"
                         + "<td>" + listado.getString("total") + "</td>"
                         + "<td>" + listado.getString("porcentaje") + " %</td>";
                 tabla += "</tr>";
+                cont++;
             }
         } catch (SQLException ex) {
             System.out.println("Se ha producido un error leyendo el listado");
         }
         tabla += "</table>";
-        //CERRAMOS LA CONEXION
-        try {
-            conexion.close();
-        } catch (SQLException ex) {
-            System.out.println("Se ha producido un error cerrando la conexión");
-        }
 
         return tabla;
     }
 
-    protected String GetNumUsuarios() {
-        //CARGAMOS EL DRIVER
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException ex) {
-            System.out.println("Error al cargar el driver");
-            System.out.println(ex.getMessage());
-        }
-        //CREAMOS LA CONEXIÓN
-        Connection conexion = null;
-        try {
-            conexion = DriverManager.getConnection("jdbc:mysql://localhost:3306/usuarios?zeroDateTimeBehavior=convertToNull", "root", "");
-        } catch (SQLException sqlEx) {
-            System.out.println("Se ha producido un error al establecer la conexión");
-            System.out.println(sqlEx.getMessage());
-        }
-
-        //CREAMOS EL STATEMENT
-        Statement stmt = null;
-
-        try {
-            stmt = conexion.createStatement();
-        } catch (SQLException sql) {
-            System.out.println("Se produjo un error creando Statement");
-            System.out.println(sql.getMessage());
-        }
+    protected int GetNumUsuarios() {
 
         //HACEMOS LA CONSULTA
         ResultSet listado = null;
         try {
-//            listado = stmt.executeQuery("SELECT * "
-//                    + "FROM t_usuarios;");
+            synchronized (statement) {
 
-            listado = stmt.executeQuery("SELECT count(id) 'num' "
-                    + "FROM usuarios.t_usuarios;");
+                listado = statement.executeQuery("SELECT count(id) 'num' "
+                        + "FROM usuarios.t_usuarios;");
+            }
         } catch (SQLException ex) {
             System.out.println("Se produjo un error haciendo una consulta");
         }
@@ -183,126 +184,19 @@ public class Porcentaje extends HttpServlet {
             System.out.println("Se ha producido un error leyendo el listado");
         }
 
-        //CERRAMOS LA CONEXION
-        try {
-            conexion.close();
-        } catch (SQLException ex) {
-            System.out.println("Se ha producido un error cerrando la conexión");
-        }
-
-        return num;
+        return Integer.parseInt(num);
     }
 
-    protected String GetTabla(String id) {
-        String tabla = "";
-
-        //CARGAMOS EL DRIVER
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException ex) {
-            System.out.println("Error al cargar el driver");
-            System.out.println(ex.getMessage());
-        }
-        //CREAMOS LA CONEXIÓN
-        Connection conexion = null;
-        try {
-            conexion = DriverManager.getConnection("jdbc:mysql://localhost:3306/usuarios?zeroDateTimeBehavior=convertToNull", "root", "");
-        } catch (SQLException sqlEx) {
-            System.out.println("Se ha producido un error al establecer la conexión");
-            System.out.println(sqlEx.getMessage());
-        }
-
-        //CREAMOS EL STATEMENT
-        Statement stmt = null;
-
-        try {
-            stmt = conexion.createStatement();
-        } catch (SQLException sql) {
-            System.out.println("Se produjo un error creando Statement");
-            System.out.println(sql.getMessage());
-        }
+    protected int GetNumApellidos() {
 
         //HACEMOS LA CONSULTA
         ResultSet listado = null;
         try {
-//            listado = stmt.executeQuery("SELECT * "
-//                    + "FROM t_usuarios;");
-            listado = stmt.executeQuery("select distinct apellido1, "
-                    + "count(apellido1) as total, "
-                    + "(count(apellido1)*100)/(select count(*) from t_usuarios) as porcentaje "
-                    + "FROM usuarios.t_usuarios u  INNER JOIN t_provincias p "
-                    + "ON u.prov_cod = p.cod "
-                    + "WHERE p.id LIKE '" + id + "'"
-                    + "group by apellido1 "
-                    + "order by total desc");
+            synchronized (statement) {
 
-        } catch (SQLException ex) {
-            System.out.println("Se produjo un error haciendo una consulta");
-        }
-
-        //RECORREMOS EL RESULTADO Y CREAMOS LA TABLA
-        tabla += "<table>";
-        tabla += "<tr><th>APELLIDO 1</th><th>TOTAL</th><th>PORCENTAJE</th></tr>";
-        try {
-            while (listado.next()) {
-                tabla += "<tr>";
-                tabla += "<td>" + listado.getString("apellido1") + "</td>"
-                        + "<td>" + listado.getString("total") + "</td>"
-                        + "<td>" + listado.getString("porcentaje") + " %</td>";
-                tabla += "</tr>";
+                listado = statement.executeQuery("SELECT count(distinct apellido1) 'num' "
+                        + "FROM usuarios.t_usuarios;");
             }
-        } catch (SQLException ex) {
-            System.out.println("Se ha producido un error leyendo el listado");
-        }
-        tabla += "</table>";
-        //CERRAMOS LA CONEXION
-        try {
-            conexion.close();
-        } catch (SQLException ex) {
-            System.out.println("Se ha producido un error cerrando la conexión");
-        }
-
-        return tabla;
-    }
-
-    protected String GetNumUsuarios(String id) {
-        //CARGAMOS EL DRIVER
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException ex) {
-            System.out.println("Error al cargar el driver");
-            System.out.println(ex.getMessage());
-        }
-        //CREAMOS LA CONEXIÓN
-        Connection conexion = null;
-        try {
-            conexion = DriverManager.getConnection("jdbc:mysql://localhost:3306/usuarios?zeroDateTimeBehavior=convertToNull", "root", "");
-        } catch (SQLException sqlEx) {
-            System.out.println("Se ha producido un error al establecer la conexión");
-            System.out.println(sqlEx.getMessage());
-        }
-
-        //CREAMOS EL STATEMENT
-        Statement stmt = null;
-
-        try {
-            stmt = conexion.createStatement();
-        } catch (SQLException sql) {
-            System.out.println("Se produjo un error creando Statement");
-            System.out.println(sql.getMessage());
-        }
-
-        //HACEMOS LA CONSULTA
-        ResultSet listado = null;
-        try {
-//            listado = stmt.executeQuery("SELECT * "
-//                    + "FROM t_usuarios;");
-
-            listado = stmt.executeQuery("SELECT count(u.id) 'num' "
-                    + "FROM usuarios.t_usuarios u  INNER JOIN t_provincias p "
-                    + "ON u.prov_cod = p.cod "
-                    + "WHERE p.id LIKE '" + id + "';");
-
         } catch (SQLException ex) {
             System.out.println("Se produjo un error haciendo una consulta");
         }
@@ -317,50 +211,121 @@ public class Porcentaje extends HttpServlet {
             System.out.println("Se ha producido un error leyendo el listado");
         }
 
-        //CERRAMOS LA CONEXION
+        return Integer.parseInt(num);
+    }
+
+    protected String GetTabla(String id, int inicio) {
+        String tabla = "";
+
+        //HACEMOS LA CONSULTA
+        ResultSet listado = null;
         try {
-            conexion.close();
+            synchronized (statement) {
+                listado = statement.executeQuery("select distinct apellido1, "
+                        + "count(apellido1) as total, "
+                        + "(count(apellido1)*100)/(select count(*) from t_usuarios) as porcentaje "
+                        + "FROM usuarios.t_usuarios u  INNER JOIN t_provincias p "
+                        + "ON u.prov_cod = p.cod "
+                        + "WHERE p.id LIKE '" + id + "'"
+                        + "group by apellido1 "
+                        + "order by total desc "
+                        + "LIMIT " + inicio + ", 20");
+            }
+
         } catch (SQLException ex) {
-            System.out.println("Se ha producido un error cerrando la conexión");
+            System.out.println("Se produjo un error haciendo una consulta");
         }
 
-        return num;
+        int cont = inicio + 1;
+        //RECORREMOS EL RESULTADO Y CREAMOS LA TABLA
+        tabla += "<table>";
+        tabla += "<tr><th>#</th><th>APELLIDO 1</th><th>TOTAL</th><th>PORCENTAJE</th></tr>";
+        try {
+            while (listado.next()) {
+                tabla += "<tr>";
+                tabla += "<td>" + cont + "</td>"
+                        + "<td>" + listado.getString("apellido1") + "</td>"
+                        + "<td>" + listado.getString("total") + "</td>"
+                        + "<td>" + listado.getString("porcentaje") + " %</td>";
+                tabla += "</tr>";
+                cont++;
+            }
+        } catch (SQLException ex) {
+            System.out.println("Se ha producido un error leyendo el listado");
+        }
+        tabla += "</table>";
+
+        return tabla;
+    }
+
+    protected int GetNumUsuarios(String id) {
+
+        //HACEMOS LA CONSULTA
+        ResultSet listado = null;
+        try {
+            synchronized (statement) {
+
+                listado = statement.executeQuery("SELECT count(u.id) 'num' "
+                        + "FROM usuarios.t_usuarios u  INNER JOIN t_provincias p "
+                        + "ON u.prov_cod = p.cod "
+                        + "WHERE p.id LIKE '" + id + "';");
+            }
+        } catch (SQLException ex) {
+            System.out.println("Se produjo un error haciendo una consulta");
+        }
+
+        //RECORREMOS EL RESULTADO Y CREAMOS LA TABLA
+        String num = "";
+        try {
+            while (listado.next()) {
+                num = listado.getString("num");
+            }
+
+        } catch (SQLException ex) {
+            System.out.println("Se ha producido un error leyendo el listado");
+        }
+        return Integer.parseInt(num);
+    }
+
+    protected int GetNumApellidos(String id) {
+
+        //HACEMOS LA CONSULTA
+        ResultSet listado = null;
+        try {
+            synchronized (statement) {
+
+                listado = statement.executeQuery("SELECT count(distinct apellido1) 'num' "
+                        + "FROM usuarios.t_usuarios u  INNER JOIN t_provincias p "
+                        + "ON u.prov_cod = p.cod "
+                        + "WHERE p.id LIKE '" + id + "';");
+            }
+        } catch (SQLException ex) {
+            System.out.println("Se produjo un error haciendo una consulta");
+        }
+
+        //RECORREMOS EL RESULTADO Y CREAMOS LA TABLA
+        String num = "";
+        try {
+            while (listado.next()) {
+                num = listado.getString("num");
+            }
+        } catch (SQLException ex) {
+            System.out.println("Se ha producido un error leyendo el listado");
+        }
+
+        return Integer.parseInt(num);
     }
 
     protected String CreaSelect(String id) {
         String select = "";
 
-        //CARGAMOS EL DRIVER
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException ex) {
-            System.out.println("Error al cargar el driver");
-            System.out.println(ex.getMessage());
-        }
-        //CREAMOS LA CONEXIÓN
-        Connection conexion = null;
-        try {
-            conexion = DriverManager.getConnection("jdbc:mysql://localhost:3306/usuarios?zeroDateTimeBehavior=convertToNull", "root", "");
-        } catch (SQLException sqlEx) {
-            System.out.println("Se ha producido un error al establecer la conexión");
-            System.out.println(sqlEx.getMessage());
-        }
-
-        //CREAMOS EL STATEMENT
-        Statement stmt = null;
-
-        try {
-            stmt = conexion.createStatement();
-        } catch (SQLException sql) {
-            System.out.println("Se produjo un error creando Statement");
-            System.out.println(sql.getMessage());
-        }
-
         //HACEMOS LA CONSULTA
         ResultSet listado = null;
         try {
-            listado = stmt.executeQuery("SELECT nombre, id "
-                    + "FROM t_provincias ");
+            synchronized (statement) {
+                listado = statement.executeQuery("SELECT nombre, id "
+                        + "FROM t_provincias ");
+            }
 
         } catch (SQLException ex) {
             System.out.println("Se produjo un error haciendo una consulta");
@@ -370,6 +335,7 @@ public class Porcentaje extends HttpServlet {
         select += "<select name='provincia'>";
         select += "\n\t\t<option value='todas'>Todas</option>";
         try {
+
             while (listado.next()) {
                 String colId = listado.getString("id");
                 if (colId.equals(id)) {
@@ -382,14 +348,6 @@ public class Porcentaje extends HttpServlet {
             System.out.println("Se ha producido un error leyendo el listado");
         }
         select += "</select>";
-
-        //CERRAMOS LA CONEXION
-        try {
-            conexion.close();
-        } catch (SQLException ex) {
-            System.out.println("Se ha producido un error cerrando la conexión");
-        }
-
         return select;
     }
 

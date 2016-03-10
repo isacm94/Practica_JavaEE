@@ -52,20 +52,23 @@ public class TablasMultiplicar extends HttpServlet {
 
             //Para que muestre dos líneas
             if (i == 1) {
-                html += "<tr>";
-            } else if (i == 6) {
-                html += "</tr>";
-            }
+                html += "\n\t<tr>";
+            } 
+            
 
-            html += "<td class='todas'>";
+            html += "\n\t\t<td class='todas'>";
             for (int j = 1; j <= 10; j++) {
                 if (j == 1) {
-                    html += "<b>Tabla de multiplicar del " + i + "</b><br><hr>";
+                    html += "\n\t\t\t<b>Tabla de multiplicar del " + i + "</b><br><hr>";
                 }
-                html += i + " x " + j + " = " + (i * j) + "<br>";
+                html += "\n\t\t\t"+i + " x " + j + " = " + (i * j) + "<br>";
             }
-
-            html += "</td>";
+            
+            html += "\n\t\t</td>";
+            
+            if (i % 3 == 0){
+                html += "\n\t\t</tr>\n\t\t<tr>";
+            }
 
         }
         html += "</table>";

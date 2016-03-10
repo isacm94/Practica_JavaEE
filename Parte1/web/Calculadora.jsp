@@ -1,3 +1,8 @@
+<%-- 
+    Document   : TablasMultiplicar
+    Created on : 06-mar-2016, 10:16:59
+    Author     : Isabel
+--%>
 <%  HttpSession s3 = request.getSession(); %>
 <% if (s3.getAttribute("username") == null) {//Sesion NO INICIADA%>
 <%@ include file="index.jsp"%><%--Vamos al login --%>
@@ -87,6 +92,7 @@
     <body>
         <%@ include file="Menu.jsp"%><%--Incluimos menú --%>
     <center>
+        <hr noshade>
         <h1>Calculadora</h1>
         <%--Mostramos el resultado --%>
         <%            if (resultado != "") {

@@ -3,6 +3,7 @@
     Created on : 06-mar-2016, 10:16:59
     Author     : Isabel
 --%>
+
 <%  HttpSession s2 = request.getSession(); %>
 <% if (s2.getAttribute("username") == null) {//Sesion NO INICIADA%>
 <%@ include file="index.jsp"%><%--Vamos al login --%>
@@ -38,6 +39,7 @@
     <body>
         <%@ include file="Menu.jsp"%><%--Incluimos menú --%>
     <center>
+        <hr noshade>
         <h1>Tablas de Multiplicar</h1>
         <form action="Tabla" method="post"> <!--Lo mandamos al servlet TablaMultiplicar.java-->
             <p>
@@ -45,10 +47,10 @@
                 <input type="text" name="numero" value="<%=numero%>"/>                
                 <input type="submit" name="mostrar" value="Mostrar tabla" />
 
-                <%  if (!error_msg.equals("")) {
-                        out.println("<span class='error'>");
+                <%  if (! error_msg.equals("")) {
+                        out.println("<div class='error'>");
                         out.println(error_msg);
-                        out.println("</span>");
+                        out.println("</div>");
                     }
                 %>
             </p>

@@ -16,6 +16,7 @@
     <body>
     <center>
         <h1><u>ESTADÍSTICAS USUARIOS</u></h1>
+        
         <li><a href="ListadoUsuarios">Mostrar todos los usuarios</a></li>
         <li><a href="Porcentaje">Mostrar porcentaje de apellidos</a></li>
     </center>
