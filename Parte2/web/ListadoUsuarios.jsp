@@ -37,27 +37,27 @@
 
 
         <%-- PAGINADOR --%>
-        
+        <br>
         <p>      
             <% if (inicio != pagActual) {%>
-            <a href="ListadoUsuarios?inicio=0">Inicio</a>
-            <a href="ListadoUsuarios?inicio=<%=(inicio - 20)%>">Anterior</a>
+            <a href="ListadoUsuarios?inicio=0" class="paginas" title="Inicio"><<</a>
+            <a href="ListadoUsuarios?inicio=<%=(inicio - 20)%>" class="paginas" title="Anterior"><</a>
             <% } %>
 
             <% for (int i = 0; i < numPaginas; i++) {
                     if ((i - 2) <= pagActual && (pagActual <= i + 2) && i != pagActual) {%> 
 
-                            <a href="ListadoUsuarios?inicio=<%=(i * 20)%>"><%=i + 1%></a>
+                            <a href="ListadoUsuarios?inicio=<%=(i * 20)%>" class="paginas"><%=i + 1%></a>
                     <% } //Fin if%>
                     <% if (i == pagActual) {%> 
 
-                            <%=i + 1%>
+                            <%="<span class='paginas paginaActual'>"+(i+1)+"</span>"%>
                     <% } //Fin if%>
                 <%} //Fin for%>
 
-            <% if ((inicio + 20) < (Integer) request.getAttribute("numUsuarios")) {%>
-                <a href="ListadoUsuarios?inicio=<%=(inicio + 20)%>">Siguiente</a>
-                <a href="ListadoUsuarios?inicio=<%=((numPaginas - 1) * 20)%>">Final</a>
+            <% if ((inicio + 20) < numPaginas) {%>
+                <a href="ListadoUsuarios?inicio=<%=(inicio + 20)%>" class="paginas" title="Siguiente">></a>
+                <a href="ListadoUsuarios?inicio=<%=((numPaginas - 1) * 20)%>" class="paginas" title="Final">>></a>
             <% }%>
         </p>
     </center>

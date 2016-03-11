@@ -1,13 +1,8 @@
-.error{
-    color: red;
-    font-weight: bold;
-}
-
 body{
     font-family: sans-serif;
 }
 
-/*Cuando se muestra una sola tabla de multiplicar*/
+/*Tabla de usuarios*/
 table {   
     border: 1px solid #000;
     border-collapse: collapse;
@@ -21,3 +16,19 @@ th, td {
     padding: 5px;
 }
 
+.paginas{
+    font-size: 20px;
+    text-decoration: none;
+    color: black;
+    background-color: #D8D8D8;
+    padding: 10px;
+    border: 1px solid #585858;
+    display: inline-block;
+    max-width: 23px; 
+    min-width: 23px; 
+    max-height: 23px; 
+    min-height: 23px; 
+}
+.paginaActual{
+    font-weight: bold;
+}

@@ -349,7 +349,7 @@ public class Porcentaje extends HttpServlet {
         }
 
         //RECORREMOS EL RESULTADO Y CREAMOS LA TABLA
-        select += "<select name='provincia'>";
+        select += "<select id='provincia' name='provincia' onchange='MuestraProvincia()'>";
         select += "\n\t\t<option value='todas'>Todas</option>";
         try {
 

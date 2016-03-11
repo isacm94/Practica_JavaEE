@@ -47,7 +47,7 @@
                     out.println(request.getAttribute("select"));
                 }
             %>
-            <input type="submit" name="filtrar" value="Filtrar">
+            
         </form>
         <br>
         <%
@@ -56,12 +56,12 @@
             }
         %>
          <%-- PAGINADOR --%>
-        <%=numPaginas%>
+        
         <p>
             <%-- if ((inicio - 20) >= 0) {--%>
             <% if (inicio != pagActual) {%>
-            <a href="Porcentaje?inicio=0&provincia=<%=provincia%>">Inicio</a>
-            <a href="Porcentaje?inicio=<%=(inicio - 20)+"&provincia="+provincia%>">Anterior</a>
+            <a href="Porcentaje?inicio=0&provincia=<%=provincia%>" class="paginas" title="Inicio"><</a>
+            <a href="Porcentaje?inicio=<%=(inicio - 20)+"&provincia="+provincia%>" class="paginas" title="Anterior"><<</a>
             <% } %>
             
             <% for(int i = 0; i < numPaginas; i++){
@@ -77,7 +77,7 @@
                 
             <%}%>
             
-            <% if ((inicio + 20) < numApellidos) {%>
+            <% if ((inicio + 20) < numPaginas) {%>
                 <a href="Porcentaje?inicio=<%=(inicio + 20)+"&provincia="+provincia%>">Siguiente</a>
                 <a href="Porcentaje?inicio=<%=((numPaginas - 1) * 20)+"&provincia="+provincia%>">Final</a>
             <% }%>
@@ -85,6 +85,13 @@
             
         </p>
     </center>
+            
+            <script>
+                function MuestraProvincia(){
+                   var idprovincia = document.getElementById("provincia").value;
+                   window.location = "http://"+window.location.host+"/Parte2/Porcentaje?inicio=0&provincia="+idprovincia;                    
+                }
+            </script>
 
 </body>
 </html>
