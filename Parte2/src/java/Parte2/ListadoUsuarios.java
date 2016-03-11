@@ -88,27 +88,42 @@ public class ListadoUsuarios extends HttpServlet {
         int numUsuarios = -1;
 
         int inicio = 0;
-        
-        if(request.getParameter("inicio") == null){
+
+        if (request.getParameter("inicio") == null) {
             inicio = 0;
-        }
-        else{
+        } else {
             inicio = Integer.parseInt(request.getParameter("inicio"));
         }
-        
+
         tabla = GetTabla(inicio);
         numUsuarios = GetNumUsuarios();
 
+        int numPaginas = getNumPaginas(numUsuarios);
+                
         //Pasamos los datos a ListadoUsuarios.jsp
         RequestDispatcher dispatcher = request.getRequestDispatcher("/ListadoUsuarios.jsp");
 
         request.setAttribute("tabla", tabla);
         request.setAttribute("numUsuarios", numUsuarios);
         request.setAttribute("inicio", inicio);
-   
+        request.setAttribute("numPaginas", numPaginas);
+
         dispatcher.forward(request, response);//Redirigimos a ListadoUsuarios
     }
-
+   
+    /**
+     * Devuelve el número de página que hay que mostrar según el nº de elementos
+     * @param numeroElementos
+     * @return Nº páginas
+     */
+    public int getNumPaginas(double numeroElementos) {
+        
+        if(numeroElementos % 20 != 0)
+            return (int) numeroElementos/20 + 1;
+        else
+            return (int) numeroElementos/20;
+        
+    }
     protected String GetTabla(int inicio) {
         String tabla = "";
 
@@ -120,7 +135,7 @@ public class ListadoUsuarios extends HttpServlet {
                         + "FROM usuarios.t_usuarios u  INNER JOIN t_provincias p "
                         + "ON u.prov_cod = p.cod "
                         + "ORDER BY u.nombre "
-                        + "LIMIT "+ inicio +", 20;");
+                        + "LIMIT " + inicio + ", 20;");
             }
         } catch (SQLException ex) {
             System.out.println("Se produjo un error haciendo una consulta");
@@ -129,19 +144,19 @@ public class ListadoUsuarios extends HttpServlet {
         //RECORREMOS EL RESULTADO Y CREAMOS LA TABLA
         tabla += "<table>";
         tabla += "\n\t<tr>\t<th>#</th>\t<th>NOMBRE</th>\t<th>APELLIDO 1</th>\t<th>APELLIDO 2</th>\t<th>PROVINCIA</th></tr>";
-        
+
         int cont = inicio + 1;
-        
+
         try {
             while (listado.next()) {
                 tabla += "\n\t<tr>";
-                tabla += "\n\t\t<td>" + cont + "</td>" 
+                tabla += "\n\t\t<td>" + cont + "</td>"
                         + "\n\t\t<td>" + listado.getString("nombre") + "</td>"
                         + "\n\t\t<td>" + listado.getString("apellido1") + "</td>"
                         + "\n\t\t<td>" + listado.getString("apellido2") + "</td>"
                         + "\n\t\t<td>" + listado.getString("provincia") + "</td>";
                 tabla += "\n\t</tr>";
-                
+
                 cont++;
             }
         } catch (SQLException ex) {

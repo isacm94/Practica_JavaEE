@@ -106,6 +106,8 @@ public class Porcentaje extends HttpServlet {
             numApellidos = GetNumApellidos(idprov);
         }
 
+        int numPaginas = getNumPaginas(numUsuarios);
+        
         //Pasamos los datos a Porcentaje.jsp
         RequestDispatcher dispatcher = request.getRequestDispatcher("/Porcentaje.jsp");
 
@@ -115,9 +117,24 @@ public class Porcentaje extends HttpServlet {
         request.setAttribute("numApellidos", numApellidos);
         request.setAttribute("inicio", inicio);
         request.setAttribute("provincia", idprov);
+        request.setAttribute("numPaginas", numPaginas);
         dispatcher.forward(request, response);//Redirigimos a Porcentaje.jsp
     }
 
+    /**
+     * Devuelve el número de página que hay que mostrar según el nº de elementos
+     * @param numeroElementos
+     * @return Nº páginas
+     */
+    public int getNumPaginas(double numeroElementos) {
+        
+        if(numeroElementos % 20 != 0)
+            return (int) numeroElementos/20 + 1;
+        else
+            return (int) numeroElementos/20;
+        
+    }
+    
     protected String GetTabla(int inicio) {
         String tabla = "";
 

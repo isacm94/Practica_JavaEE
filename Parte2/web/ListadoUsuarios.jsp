@@ -5,13 +5,17 @@
 --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<%--Declaramos las variables --%>
+
 <%! int inicio = 0;%>
-<%--Asignamos las variables si no son nulas, ya que la 1ª vez que se accede a la app son nulas --%>
+
 <%
     if (request.getAttribute("inicio") != null) {
         inicio = (Integer) request.getAttribute("inicio");
-    }%>
+    }
+    
+    int numPaginas = (Integer) request.getAttribute("numPaginas");
+%>
+
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -31,11 +35,18 @@
                 out.println(request.getAttribute("tabla"));
             }
         %>
-
+        
+        
+        
         <p>
             <% if ((inicio - 20) >= 0) {%>
             <a href="ListadoUsuarios?inicio=<%=(inicio - 20)%>">Anterior</a>
             <% } %>
+            
+            <% for(int i = 0; i < numPaginas; i++){%>                
+                 <a href="ListadoUsuarios?inicio=<%=(i*20)%>"><%=i+1%></a>
+            <%}%>
+
             <% if ((inicio + 20) < (Integer) request.getAttribute("numUsuarios")) {%>
             <a href="ListadoUsuarios?inicio=<%=(inicio + 20)%>">Siguiente</a>
             <% }%>

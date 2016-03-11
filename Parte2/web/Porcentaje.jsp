@@ -20,6 +20,8 @@
     if (request.getAttribute("provincia") != null) {
         provincia = (String) request.getAttribute("provincia");
     }
+    
+    int numPaginas = (Integer) request.getAttribute("numPaginas");
     %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -55,6 +57,10 @@
             <% if ((inicio - 20) >= 0) {%>
             <a href="Porcentaje?inicio=<%=(inicio - 20)+"&provincia="+provincia%>">Anterior</a>
             <% } %>
+            
+            <% for(int i = 0; i < numPaginas; i++){%>    
+                <a href="Porcentaje?inicio=<%=(i*20)+"&provincia="+provincia%>"><%=i+1%></a>
+            <%}%>
             
             <% if ((inicio + 20) < numApellidos) {%>
                 <a href="Porcentaje?inicio=<%=(inicio + 20)+"&provincia="+provincia%>">Siguiente</a>
