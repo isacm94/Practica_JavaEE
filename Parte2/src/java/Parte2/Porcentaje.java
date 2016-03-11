@@ -106,7 +106,7 @@ public class Porcentaje extends HttpServlet {
             numApellidos = GetNumApellidos(idprov);
         }
 
-        int numPaginas = getNumPaginas(numUsuarios);
+        int numPaginas = getNumPaginas(numApellidos);
         
         //Pasamos los datos a Porcentaje.jsp
         RequestDispatcher dispatcher = request.getRequestDispatcher("/Porcentaje.jsp");

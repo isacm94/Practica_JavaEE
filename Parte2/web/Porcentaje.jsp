@@ -7,6 +7,7 @@
 <%! int inicio = 0;
     int numApellidos = 0;
     String provincia = "todas";
+    int numPaginas = 0;
 %>
 <%--Asignamos las variables si no son nulas, ya que la 1ª vez que se accede a la app son nulas --%>
 <%
@@ -21,7 +22,9 @@
         provincia = (String) request.getAttribute("provincia");
     }
     
-    int numPaginas = (Integer) request.getAttribute("numPaginas");
+    numPaginas = (Integer) request.getAttribute("numPaginas");
+    
+    int pagActual = inicio / 20;
     %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -52,19 +55,34 @@
                 out.println(request.getAttribute("tabla"));
             }
         %>
-
+         <%-- PAGINADOR --%>
+        <%=numPaginas%>
         <p>
-            <% if ((inicio - 20) >= 0) {%>
+            <%-- if ((inicio - 20) >= 0) {--%>
+            <% if (inicio != pagActual) {%>
+            <a href="Porcentaje?inicio=0&provincia=<%=provincia%>">Inicio</a>
             <a href="Porcentaje?inicio=<%=(inicio - 20)+"&provincia="+provincia%>">Anterior</a>
             <% } %>
             
-            <% for(int i = 0; i < numPaginas; i++){%>    
-                <a href="Porcentaje?inicio=<%=(i*20)+"&provincia="+provincia%>"><%=i+1%></a>
+            <% for(int i = 0; i < numPaginas; i++){
+                if ((i - 2) <= pagActual && pagActual <= i + 2 && i != pagActual) { %>              
+                
+                   <a href="Porcentaje?inicio=<%=(i*20)+"&provincia="+provincia%>"><%=i+1%></a>
+            
+                <% } //Fin if%>
+                
+                <% if (i == pagActual) {%> 
+                    <%=i + 1%>
+                <% } //Fin if%>
+                
             <%}%>
             
             <% if ((inicio + 20) < numApellidos) {%>
                 <a href="Porcentaje?inicio=<%=(inicio + 20)+"&provincia="+provincia%>">Siguiente</a>
+                <a href="Porcentaje?inicio=<%=((numPaginas - 1) * 20)+"&provincia="+provincia%>">Final</a>
             <% }%>
+            
+            
         </p>
     </center>
 

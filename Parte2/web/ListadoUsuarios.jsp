@@ -3,19 +3,18 @@
     Created on : 09-mar-2016, 17:03:54
     Author     : 2DAW
 --%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-
-<%! int inicio = 0;%>
-
+<%! int inicio = 0;
+    int numPaginas = 0;%>
 <%
     if (request.getAttribute("inicio") != null) {
         inicio = (Integer) request.getAttribute("inicio");
     }
-    
-    int numPaginas = (Integer) request.getAttribute("numPaginas");
-%>
 
+    int numPaginas = (Integer) request.getAttribute("numPaginas");
+    int pagActual = inicio / 20;
+%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -35,20 +34,30 @@
                 out.println(request.getAttribute("tabla"));
             }
         %>
+
+
+        <%-- PAGINADOR --%>
         
-        
-        
-        <p>
-            <% if ((inicio - 20) >= 0) {%>
+        <p>      
+            <% if (inicio != pagActual) {%>
+            <a href="ListadoUsuarios?inicio=0">Inicio</a>
             <a href="ListadoUsuarios?inicio=<%=(inicio - 20)%>">Anterior</a>
             <% } %>
-            
-            <% for(int i = 0; i < numPaginas; i++){%>                
-                 <a href="ListadoUsuarios?inicio=<%=(i*20)%>"><%=i+1%></a>
-            <%}%>
+
+            <% for (int i = 0; i < numPaginas; i++) {
+                    if ((i - 2) <= pagActual && (pagActual <= i + 2) && i != pagActual) {%> 
+
+                            <a href="ListadoUsuarios?inicio=<%=(i * 20)%>"><%=i + 1%></a>
+                    <% } //Fin if%>
+                    <% if (i == pagActual) {%> 
+
+                            <%=i + 1%>
+                    <% } //Fin if%>
+                <%} //Fin for%>
 
             <% if ((inicio + 20) < (Integer) request.getAttribute("numUsuarios")) {%>
-            <a href="ListadoUsuarios?inicio=<%=(inicio + 20)%>">Siguiente</a>
+                <a href="ListadoUsuarios?inicio=<%=(inicio + 20)%>">Siguiente</a>
+                <a href="ListadoUsuarios?inicio=<%=((numPaginas - 1) * 20)%>">Final</a>
             <% }%>
         </p>
     </center>
