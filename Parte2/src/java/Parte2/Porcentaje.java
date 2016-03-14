@@ -92,7 +92,7 @@ public class Porcentaje extends HttpServlet {
         String idprov = request.getParameter("provincia");
         int numUsuarios = 0;
         int numApellidos = 0;
-        
+
         select = CreaSelect(idprov); //Crea y devuelve el select HTML que guardará todas las provincias
 
         int inicio = 0;
@@ -129,7 +129,9 @@ public class Porcentaje extends HttpServlet {
     }
 
     /**
-     * Devuelve el número de páginas que hay que mostrar según el nº de elementos, teniendo en cuenta que mostrará 20 elementos por página.
+     * Devuelve el número de páginas que hay que mostrar según el nº de
+     * elementos, teniendo en cuenta que mostrará 20 elementos por página.
+     *
      * @param numeroElementos
      * @return Nº páginas
      */
@@ -144,7 +146,9 @@ public class Porcentaje extends HttpServlet {
     }
 
     /**
-     * Muestra todos los apellidos con el nº de veces que aparece y su porcentaje respecto al total
+     * Muestra todos los apellidos con el nº de veces que aparece y su
+     * porcentaje respecto al total
+     *
      * @param inicio Desde que registro muestra
      * @return Tabla HTML de apellidos
      */
@@ -167,13 +171,13 @@ public class Porcentaje extends HttpServlet {
         } catch (SQLException ex) {
             System.out.println("Se produjo un error haciendo una consulta");
         }
-        
+
         //RECORREMOS EL RESULTADO Y CREAMOS LA TABLA
         tabla += "<table>";
         tabla += "<tr><th>#</th><th>APELLIDO 1</th><th>TOTAL</th><th>PORCENTAJE</th></tr>";
 
         int cont = inicio + 1;//Columna #
-        
+
         try {
             while (listado.next()) {
                 tabla += "<tr>";
@@ -194,6 +198,7 @@ public class Porcentaje extends HttpServlet {
 
     /**
      * Devuelve el número total de usuarios
+     *
      * @return Número de usuarios
      */
     protected int GetNumUsuarios() {
@@ -223,8 +228,9 @@ public class Porcentaje extends HttpServlet {
         return Integer.parseInt(num);
     }
 
-     /**
+    /**
      * Devuelve el número total de apellidos distintos que existen
+     *
      * @return Número de apellidos
      */
     protected int GetNumApellidos() {
@@ -255,7 +261,9 @@ public class Porcentaje extends HttpServlet {
     }
 
     /**
-     * Devuelve todos los apellidos con el nº de veces que aparece y su porcentaje respecto al total de una provincia
+     * Devuelve todos los apellidos con el nº de veces que aparece y su
+     * porcentaje respecto al total de una provincia
+     *
      * @param idprov ID de la provincia
      * @param inicio Registro por el que empieza a mostrar
      * @return Tabla HTML de apellidos
@@ -306,8 +314,9 @@ public class Porcentaje extends HttpServlet {
 
     /**
      * Devuelve el número total de usuarios de una provincia
+     *
      * @param idprov
-     * @return Númeor de usuarios 
+     * @return Númeor de usuarios
      */
     protected int GetNumUsuarios(String idprov) {
 
@@ -339,7 +348,9 @@ public class Porcentaje extends HttpServlet {
     }
 
     /**
-     * Devuelve el número total de apellidos distintos que existen según la provincia
+     * Devuelve el número total de apellidos distintos que existen según la
+     * provincia
+     *
      * @param idprov ID de la provincia
      * @return Número de Apellidos
      */
@@ -353,7 +364,7 @@ public class Porcentaje extends HttpServlet {
                 listado = statement.executeQuery("SELECT count(distinct apellido1) 'num' "
                         + "FROM usuarios.t_usuarios u  INNER JOIN t_provincias p "
                         + "ON u.prov_cod = p.cod "
-                        + "WHERE p.id LIKE '" + idprov  + "';");
+                        + "WHERE p.id LIKE '" + idprov + "';");
             }
         } catch (SQLException ex) {
             System.out.println("Se produjo un error haciendo una consulta");
@@ -374,6 +385,7 @@ public class Porcentaje extends HttpServlet {
 
     /**
      * Crea un select de HTML con todas las provincias
+     *
      * @param idprov ID de la provincia que ha sido seleccionada
      * @return Select HTML
      */

@@ -59,26 +59,26 @@
         <p>
 
             <% if (inicio != pagActual) {%>
-            <a href="Porcentaje?inicio=0&provincia=<%=provincia%>" class="paginas" title="Inicio"><</a>
-            <a href="Porcentaje?inicio=<%=(inicio - 20) + "&provincia=" + provincia%>" class="paginas" title="Anterior"><<</a>
+                <a href="Porcentaje?inicio=0&provincia=<%=provincia%>" class="paginas" title="Inicio"><</a>
+                <a href="Porcentaje?inicio=<%=(inicio - 20) + "&provincia=" + provincia%>" class="paginas" title="Anterior"><<</a>
             <% } %>
 
             <% for (int i = 0; i < numPaginas; i++) {
-                    if ((i - 2) <= pagActual && pagActual <= i + 2 && i != pagActual) {%>              
+                if ((i - 2) <= pagActual && pagActual <= i + 2 && i != pagActual) {%>              
 
-            <a href="Porcentaje?inicio=<%=(i * 20) + "&provincia=" + provincia%>" class="paginas"><%=i + 1%></a>
+                    <a href="Porcentaje?inicio=<%=(i * 20) + "&provincia=" + provincia%>" class="paginas"><%=i + 1%></a>
 
-            <% } //Fin if%>
+                <% } //Fin if%>
 
-            <% if (i == pagActual) {%> 
-            <%="<span class='paginas paginaActual'>" + (i + 1) + "</span>"%>
-            <% } //Fin if%>
+                <% if (i == pagActual) {%> 
+                    <%="<span class='paginas paginaActual'>" + (i + 1) + "</span>"%>
+                <% } //Fin if%>
 
-            <%}%>
+            <%}//Fin for%>
 
             <% if (numPaginas != (pagActual+1)) { //pagActual empieza en 0, por eso sumamos 1%>
-            <a href="Porcentaje?inicio=<%=(inicio + 20) + "&provincia=" + provincia%>" class="paginas">>></a>
-            <a href="Porcentaje?inicio=<%=((numPaginas - 1) * 20) + "&provincia=" + provincia%>" class="paginas">></a>
+                <a href="Porcentaje?inicio=<%=(inicio + 20) + "&provincia=" + provincia%>" class="paginas">>></a>
+                <a href="Porcentaje?inicio=<%=((numPaginas - 1) * 20) + "&provincia=" + provincia%>" class="paginas">></a>
             <% }%>
 
 

@@ -115,7 +115,9 @@ public class ListadoUsuarios extends HttpServlet {
     }
 
     /**
-     * Devuelve el número de páginas que hay que mostrar según el nº de elementos, teniendo en cuenta que mostrará 20 elementos por página.
+     * Devuelve el número de páginas que hay que mostrar según el nº de
+     * elementos, teniendo en cuenta que mostrará 20 elementos por página.
+     *
      * @param numeroElementos
      * @return Nº páginas
      */
@@ -131,6 +133,7 @@ public class ListadoUsuarios extends HttpServlet {
 
     /**
      * Devuelva una tabla html con los datos de los usuarios
+     *
      * @param inicio Desde donde tiene que mostrar
      * @return Tabla con los datos
      */

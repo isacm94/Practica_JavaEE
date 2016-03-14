@@ -39,30 +39,30 @@
         <%-- PAGINADOR --%>                
         <p>      
             <% if (inicio != pagActual) {%>
-            <a href="ListadoUsuarios?inicio=0" class="paginas" title="Inicio"><<</a>
-            <a href="ListadoUsuarios?inicio=<%=(inicio - 20)%>" class="paginas" title="Anterior"><</a>
+                <a href="ListadoUsuarios?inicio=0" class="paginas" title="Inicio"><<</a>
+                <a href="ListadoUsuarios?inicio=<%=(inicio - 20)%>" class="paginas" title="Anterior"><</a>
             <% } %>
 
             <% for (int i = 0; i < numPaginas; i++) {
-                    if ((i - 2) <= pagActual && (pagActual <= i + 2) && i != pagActual) {%> 
+                if ((i - 2) <= pagActual && (pagActual <= i + 2) && i != pagActual) {%> 
+                        <a href="ListadoUsuarios?inicio=<%=(i * 20)%>" class="paginas"><%=i + 1%></a>
+                <% } //Fin if%>
+                
+                <% if (i == pagActual) {%> 
 
-            <a href="ListadoUsuarios?inicio=<%=(i * 20)%>" class="paginas"><%=i + 1%></a>
-            <% } //Fin if%>
-            <% if (i == pagActual) {%> 
-
-            <%="<span class='paginas paginaActual'>" + (i + 1) + "</span>"%>
-            <% } //Fin if%>
+                    <%="<span class='paginas paginaActual'>" + (i + 1) + "</span>"%>
+                <% } //Fin if%>
             <%} //Fin for%>
 
             <% if (numPaginas != (pagActual+1)) { //pagActual empieza en 0, por eso sumamos 1%>
-            <a href="ListadoUsuarios?inicio=<%=(inicio + 20)%>" class="paginas" title="Siguiente">></a>
-            <a href="ListadoUsuarios?inicio=<%=((numPaginas - 1) * 20)%>" class="paginas" title="Final">>></a>
+                <a href="ListadoUsuarios?inicio=<%=(inicio + 20)%>" class="paginas" title="Siguiente">></a>
+                <a href="ListadoUsuarios?inicio=<%=((numPaginas - 1) * 20)%>" class="paginas" title="Final">>></a>
             <% }%>
         </p>
     </center>
     <script src="assets/jquery.min.js" type="text/javascript"></script>
     <script>
-        $(document).ready(function(){
+        $(document).ready(function () {
             $("tr:odd").addClass("impar"); // filas impares
             $("tr:even").addClass("par"); // filas pares
         });

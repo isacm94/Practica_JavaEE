@@ -4,7 +4,7 @@ body{
 
 /*Tabla de usuarios*/
 table {   
-    border: 1px solid #000;
+    border: 1px solid white;
     border-collapse: collapse;
     width: 60%;
     max-width: 500px;
@@ -12,12 +12,16 @@ table {
 }
 th, td {
     width: 50px;
-    border: 1px solid #000;
+    border: 1px solid white;
     padding: 5px;
+}
+th{
+    background-color: #A0A0A0;
+    color: white;
 }
 
 .par{
-    background-color: #ddd;
+    background-color: #E8E8E8;
 }
 .impar{
     background-color: white;
