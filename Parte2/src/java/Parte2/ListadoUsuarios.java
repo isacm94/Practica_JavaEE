@@ -42,11 +42,9 @@ public class ListadoUsuarios extends HttpServlet {
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(ListadoUsuarios.class.getName()).log(Level.SEVERE,
                     "No se pudo cargar el driver de la base de datos", ex);
-            //System.out.println("Error al cargar el driver");
         } catch (SQLException ex) {
             Logger.getLogger(ListadoUsuarios.class.getName()).log(Level.SEVERE,
                     "No se pudo obtener la conexión a la base de datos", ex);
-            //System.out.println("Error al obtener la conexión a la base de datos");
         }
     }
 
@@ -99,7 +97,7 @@ public class ListadoUsuarios extends HttpServlet {
         numUsuarios = GetNumUsuarios();
 
         int numPaginas = getNumPaginas(numUsuarios);
-                
+
         //Pasamos los datos a ListadoUsuarios.jsp
         RequestDispatcher dispatcher = request.getRequestDispatcher("/ListadoUsuarios.jsp");
 
@@ -110,20 +108,23 @@ public class ListadoUsuarios extends HttpServlet {
 
         dispatcher.forward(request, response);//Redirigimos a ListadoUsuarios
     }
-   
+
     /**
      * Devuelve el número de página que hay que mostrar según el nº de elementos
+     *
      * @param numeroElementos
      * @return Nº páginas
      */
     public int getNumPaginas(double numeroElementos) {
-        
-        if(numeroElementos % 20 != 0)
-            return (int) numeroElementos/20 + 1;
-        else
-            return (int) numeroElementos/20;
-        
+
+        if (numeroElementos % 20 != 0) {
+            return (int) numeroElementos / 20 + 1;
+        } else {
+            return (int) numeroElementos / 20;
+        }
+
     }
+
     protected String GetTabla(int inicio) {
         String tabla = "";
 

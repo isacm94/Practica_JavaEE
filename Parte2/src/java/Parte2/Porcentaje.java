@@ -52,7 +52,7 @@ public class Porcentaje extends HttpServlet {
         try {
             statement.close();
         } catch (SQLException ex) {
-            Logger.getLogger(ListadoUsuarios.class.getName()).log(Level.SEVERE,
+            Logger.getLogger(Porcentaje.class.getName()).log(Level.SEVERE,
                     "No se pudo cerrar el objeto Statement", ex);
 
             System.out.println("Error, no se pudo cerrar el objeto Statement");
@@ -60,7 +60,7 @@ public class Porcentaje extends HttpServlet {
             try {
                 conexion.close();
             } catch (SQLException ex) {
-                Logger.getLogger(ListadoUsuarios.class.getName()).log(Level.SEVERE,
+                Logger.getLogger(Porcentaje.class.getName()).log(Level.SEVERE,
                         "No se pudo cerrar el objeto Conexion", ex);
             }
 
