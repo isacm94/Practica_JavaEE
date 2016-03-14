@@ -16,18 +16,26 @@ th, td {
     padding: 5px;
 }
 
+.par{
+    background-color: #ddd;
+}
+.impar{
+    background-color: white;
+}
+/*PAGINADOR*/
 .paginas{
-    font-size: 20px;
+    font-size: 15px;
     text-decoration: none;
     color: black;
     background-color: #D8D8D8;
-    padding: 10px;
+    padding: 7px;
     border: 1px solid #585858;
     display: inline-block;
-    max-width: 23px; 
-    min-width: 23px; 
-    max-height: 23px; 
-    min-height: 23px; 
+    width: 23px;
+    height: 21px;
+    vertical-align: middle;
+    margin: 0 auto;
+    text-align: center;
 }
 .paginaActual{
     font-weight: bold;

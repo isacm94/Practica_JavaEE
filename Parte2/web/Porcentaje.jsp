@@ -17,15 +17,15 @@
     if (request.getAttribute("numApellidos") != null) {
         numApellidos = (Integer) request.getAttribute("numApellidos");
     }
-    
+
     if (request.getAttribute("provincia") != null) {
         provincia = (String) request.getAttribute("provincia");
     }
-    
+
     numPaginas = (Integer) request.getAttribute("numPaginas");
-    
+
     int pagActual = inicio / 20;
-    %>
+%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -47,7 +47,7 @@
                     out.println(request.getAttribute("select"));
                 }
             %>
-            
+
         </form>
         <br>
         <%
@@ -55,43 +55,50 @@
                 out.println(request.getAttribute("tabla"));
             }
         %>
-         <%-- PAGINADOR --%>
-        
+        <%-- PAGINADOR --%>        
         <p>
-            <%-- if ((inicio - 20) >= 0) {--%>
+
             <% if (inicio != pagActual) {%>
             <a href="Porcentaje?inicio=0&provincia=<%=provincia%>" class="paginas" title="Inicio"><</a>
-            <a href="Porcentaje?inicio=<%=(inicio - 20)+"&provincia="+provincia%>" class="paginas" title="Anterior"><<</a>
+            <a href="Porcentaje?inicio=<%=(inicio - 20) + "&provincia=" + provincia%>" class="paginas" title="Anterior"><<</a>
             <% } %>
-            
-            <% for(int i = 0; i < numPaginas; i++){
-                if ((i - 2) <= pagActual && pagActual <= i + 2 && i != pagActual) { %>              
-                
-                   <a href="Porcentaje?inicio=<%=(i*20)+"&provincia="+provincia%>"><%=i+1%></a>
-            
-                <% } //Fin if%>
-                
-                <% if (i == pagActual) {%> 
-                    <%=i + 1%>
-                <% } //Fin if%>
-                
+
+            <% for (int i = 0; i < numPaginas; i++) {
+                    if ((i - 2) <= pagActual && pagActual <= i + 2 && i != pagActual) {%>              
+
+            <a href="Porcentaje?inicio=<%=(i * 20) + "&provincia=" + provincia%>" class="paginas"><%=i + 1%></a>
+
+            <% } //Fin if%>
+
+            <% if (i == pagActual) {%> 
+            <%="<span class='paginas paginaActual'>" + (i + 1) + "</span>"%>
+            <% } //Fin if%>
+
             <%}%>
-            
-            <% if ((inicio + 20) < numPaginas) {%>
-                <a href="Porcentaje?inicio=<%=(inicio + 20)+"&provincia="+provincia%>">Siguiente</a>
-                <a href="Porcentaje?inicio=<%=((numPaginas - 1) * 20)+"&provincia="+provincia%>">Final</a>
+
+            <% if (numPaginas != (pagActual+1)) { //pagActual empieza en 0, por eso sumamos 1%>
+            <a href="Porcentaje?inicio=<%=(inicio + 20) + "&provincia=" + provincia%>" class="paginas">>></a>
+            <a href="Porcentaje?inicio=<%=((numPaginas - 1) * 20) + "&provincia=" + provincia%>" class="paginas">></a>
             <% }%>
-            
-            
+
+
         </p>
     </center>
-            
-            <script>
-                function MuestraProvincia(){
-                   var idprovincia = document.getElementById("provincia").value;
-                   window.location = "http://"+window.location.host+"/Parte2/Porcentaje?inicio=0&provincia="+idprovincia;                    
-                }
-            </script>
+
+    <script>
+        function MuestraProvincia() {
+            var idprovincia = document.getElementById("provincia").value;
+            window.location = "http://" + window.location.host + "/Parte2/Porcentaje?inicio=0&provincia=" + idprovincia;
+        }
+    </script>
+
+    <script src="assets/jquery.min.js" type="text/javascript"></script>
+    <script>
+        $(document).ready(function(){
+            $("tr:odd").addClass("impar"); // filas impares
+            $("tr:even").addClass("par"); // filas pares
+        });
+    </script>
 
 </body>
 </html>

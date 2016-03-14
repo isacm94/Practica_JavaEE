@@ -32,6 +32,9 @@ public class Porcentaje extends HttpServlet {
     private Statement statement = null;
     private Connection conexion = null;
 
+    /**
+     * Inicia La base de datos
+     */
     @Override
     public void init(ServletConfig config) {
         try {
@@ -47,6 +50,9 @@ public class Porcentaje extends HttpServlet {
         }
     }
 
+    /**
+     * Inicia La base de datos
+     */
     @Override
     public void destroy() {
         try {
@@ -86,28 +92,29 @@ public class Porcentaje extends HttpServlet {
         String idprov = request.getParameter("provincia");
         int numUsuarios = 0;
         int numApellidos = 0;
-        select = CreaSelect(idprov);
+        
+        select = CreaSelect(idprov); //Crea y devuelve el select HTML que guardará todas las provincias
 
         int inicio = 0;
 
-        if (request.getParameter("inicio") == null) {
+        if (request.getParameter("inicio") == null) { //La primera vez empezará a mostrar desde el registro 0
             inicio = 0;
         } else {
             inicio = Integer.parseInt(request.getParameter("inicio"));
         }
 
-        if (idprov == null || idprov.equals("todas")) {
+        if (idprov == null || idprov.equals("todas")) { //Si es la primera vez que se accede o elige 'todas' en el select muestras todos los usuarios de todas las provincias
             tabla = GetTabla(inicio);
             numUsuarios = GetNumUsuarios();
             numApellidos = GetNumApellidos();
-        } else if (idprov != null) {
+        } else if (idprov != null) {//Si llega una provincia por get, mostramos sus usuarios
             tabla = GetTabla(idprov, inicio);
             numUsuarios = GetNumUsuarios(idprov);
             numApellidos = GetNumApellidos(idprov);
         }
 
-        int numPaginas = getNumPaginas(numApellidos);
-        
+        int numPaginas = getNumPaginas(numApellidos);//Calculamos número de páginas a mostrar
+
         //Pasamos los datos a Porcentaje.jsp
         RequestDispatcher dispatcher = request.getRequestDispatcher("/Porcentaje.jsp");
 
@@ -122,19 +129,25 @@ public class Porcentaje extends HttpServlet {
     }
 
     /**
-     * Devuelve el número de página que hay que mostrar según el nº de elementos
+     * Devuelve el número de páginas que hay que mostrar según el nº de elementos, teniendo en cuenta que mostrará 20 elementos por página.
      * @param numeroElementos
      * @return Nº páginas
      */
     public int getNumPaginas(double numeroElementos) {
-        
-        if(numeroElementos % 20 != 0)
-            return (int) numeroElementos/20 + 1;
-        else
-            return (int) numeroElementos/20;
-        
+
+        if (numeroElementos % 20 != 0) {
+            return (int) numeroElementos / 20 + 1;
+        } else {
+            return (int) numeroElementos / 20;
+        }
+
     }
-    
+
+    /**
+     * Muestra todos los apellidos con el nº de veces que aparece y su porcentaje respecto al total
+     * @param inicio Desde que registro muestra
+     * @return Tabla HTML de apellidos
+     */
     protected String GetTabla(int inicio) {
         String tabla = "";
 
@@ -146,19 +159,21 @@ public class Porcentaje extends HttpServlet {
                         + "count(apellido1) as total, "
                         + "(count(apellido1)*100)/(select count(*) from t_usuarios) as porcentaje "
                         + "FROM t_usuarios "
-                        + "group by apellido1 "
-                        + "order by total desc "
-                        + "LIMIT " + inicio + ", 20");
+                        + "GROUP BY apellido1 "
+                        + "ORDER BY total desc "
+                        + "LIMIT " + Integer.toString(inicio) + ", 20");
             }
 
         } catch (SQLException ex) {
             System.out.println("Se produjo un error haciendo una consulta");
         }
-
-        int cont = inicio + 1;
+        
         //RECORREMOS EL RESULTADO Y CREAMOS LA TABLA
         tabla += "<table>";
         tabla += "<tr><th>#</th><th>APELLIDO 1</th><th>TOTAL</th><th>PORCENTAJE</th></tr>";
+
+        int cont = inicio + 1;//Columna #
+        
         try {
             while (listado.next()) {
                 tabla += "<tr>";
@@ -177,6 +192,10 @@ public class Porcentaje extends HttpServlet {
         return tabla;
     }
 
+    /**
+     * Devuelve el número total de usuarios
+     * @return Número de usuarios
+     */
     protected int GetNumUsuarios() {
 
         //HACEMOS LA CONSULTA
@@ -204,6 +223,10 @@ public class Porcentaje extends HttpServlet {
         return Integer.parseInt(num);
     }
 
+     /**
+     * Devuelve el número total de apellidos distintos que existen
+     * @return Número de apellidos
+     */
     protected int GetNumApellidos() {
 
         //HACEMOS LA CONSULTA
@@ -231,7 +254,13 @@ public class Porcentaje extends HttpServlet {
         return Integer.parseInt(num);
     }
 
-    protected String GetTabla(String id, int inicio) {
+    /**
+     * Devuelve todos los apellidos con el nº de veces que aparece y su porcentaje respecto al total de una provincia
+     * @param idprov ID de la provincia
+     * @param inicio Registro por el que empieza a mostrar
+     * @return Tabla HTML de apellidos
+     */
+    protected String GetTabla(String idprov, int inicio) {
         String tabla = "";
 
         //HACEMOS LA CONSULTA
@@ -243,7 +272,7 @@ public class Porcentaje extends HttpServlet {
                         + "(count(apellido1)*100)/(select count(*) from t_usuarios) as porcentaje "
                         + "FROM usuarios.t_usuarios u  INNER JOIN t_provincias p "
                         + "ON u.prov_cod = p.cod "
-                        + "WHERE p.id LIKE '" + id + "'"
+                        + "WHERE p.id LIKE '" + idprov + "'"
                         + "group by apellido1 "
                         + "order by total desc "
                         + "LIMIT " + inicio + ", 20");
@@ -275,7 +304,12 @@ public class Porcentaje extends HttpServlet {
         return tabla;
     }
 
-    protected int GetNumUsuarios(String id) {
+    /**
+     * Devuelve el número total de usuarios de una provincia
+     * @param idprov
+     * @return Númeor de usuarios 
+     */
+    protected int GetNumUsuarios(String idprov) {
 
         //HACEMOS LA CONSULTA
         ResultSet listado = null;
@@ -285,7 +319,7 @@ public class Porcentaje extends HttpServlet {
                 listado = statement.executeQuery("SELECT count(u.id) 'num' "
                         + "FROM usuarios.t_usuarios u  INNER JOIN t_provincias p "
                         + "ON u.prov_cod = p.cod "
-                        + "WHERE p.id LIKE '" + id + "';");
+                        + "WHERE p.id LIKE '" + idprov + "';");
             }
         } catch (SQLException ex) {
             System.out.println("Se produjo un error haciendo una consulta");
@@ -304,7 +338,12 @@ public class Porcentaje extends HttpServlet {
         return Integer.parseInt(num);
     }
 
-    protected int GetNumApellidos(String id) {
+    /**
+     * Devuelve el número total de apellidos distintos que existen según la provincia
+     * @param idprov ID de la provincia
+     * @return Número de Apellidos
+     */
+    protected int GetNumApellidos(String idprov) {
 
         //HACEMOS LA CONSULTA
         ResultSet listado = null;
@@ -314,7 +353,7 @@ public class Porcentaje extends HttpServlet {
                 listado = statement.executeQuery("SELECT count(distinct apellido1) 'num' "
                         + "FROM usuarios.t_usuarios u  INNER JOIN t_provincias p "
                         + "ON u.prov_cod = p.cod "
-                        + "WHERE p.id LIKE '" + id + "';");
+                        + "WHERE p.id LIKE '" + idprov  + "';");
             }
         } catch (SQLException ex) {
             System.out.println("Se produjo un error haciendo una consulta");
@@ -333,7 +372,12 @@ public class Porcentaje extends HttpServlet {
         return Integer.parseInt(num);
     }
 
-    protected String CreaSelect(String id) {
+    /**
+     * Crea un select de HTML con todas las provincias
+     * @param idprov ID de la provincia que ha sido seleccionada
+     * @return Select HTML
+     */
+    protected String CreaSelect(String idprov) {
         String select = "";
 
         //HACEMOS LA CONSULTA
@@ -355,7 +399,7 @@ public class Porcentaje extends HttpServlet {
 
             while (listado.next()) {
                 String colId = listado.getString("id");
-                if (colId.equals(id)) {
+                if (colId.equals(idprov)) {
                     select += "\n\t\t<option selected='selected' value='" + colId + "'>" + listado.getString("nombre") + "</option>";
                 } else {
                     select += "\n\t\t<option value='" + colId + "'>" + listado.getString("nombre") + "</option>";

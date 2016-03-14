@@ -33,6 +33,9 @@ public class ListadoUsuarios extends HttpServlet {
     private Statement statement = null;
     private Connection conexion = null;
 
+    /**
+     * Inicia La base de datos
+     */
     @Override
     public void init(ServletConfig config) {
         try {
@@ -48,6 +51,9 @@ public class ListadoUsuarios extends HttpServlet {
         }
     }
 
+    /**
+     * Cierra La base de datos
+     */
     @Override
     public void destroy() {
         try {
@@ -84,10 +90,9 @@ public class ListadoUsuarios extends HttpServlet {
         //Variables
         String tabla = "";
         int numUsuarios = -1;
-
         int inicio = 0;
 
-        if (request.getParameter("inicio") == null) {
+        if (request.getParameter("inicio") == null) {//La primera vez que entra es 0
             inicio = 0;
         } else {
             inicio = Integer.parseInt(request.getParameter("inicio"));
@@ -110,8 +115,7 @@ public class ListadoUsuarios extends HttpServlet {
     }
 
     /**
-     * Devuelve el número de página que hay que mostrar según el nº de elementos
-     *
+     * Devuelve el número de páginas que hay que mostrar según el nº de elementos, teniendo en cuenta que mostrará 20 elementos por página.
      * @param numeroElementos
      * @return Nº páginas
      */
@@ -125,6 +129,11 @@ public class ListadoUsuarios extends HttpServlet {
 
     }
 
+    /**
+     * Devuelva una tabla html con los datos de los usuarios
+     * @param inicio Desde donde tiene que mostrar
+     * @return Tabla con los datos
+     */
     protected String GetTabla(int inicio) {
         String tabla = "";
 
@@ -136,7 +145,7 @@ public class ListadoUsuarios extends HttpServlet {
                         + "FROM usuarios.t_usuarios u  INNER JOIN t_provincias p "
                         + "ON u.prov_cod = p.cod "
                         + "ORDER BY u.nombre "
-                        + "LIMIT " + inicio + ", 20;");
+                        + "LIMIT " + Integer.toString(inicio) + ", 20;");
             }
         } catch (SQLException ex) {
             System.out.println("Se produjo un error haciendo una consulta");
@@ -146,7 +155,7 @@ public class ListadoUsuarios extends HttpServlet {
         tabla += "<table>";
         tabla += "\n\t<tr>\t<th>#</th>\t<th>NOMBRE</th>\t<th>APELLIDO 1</th>\t<th>APELLIDO 2</th>\t<th>PROVINCIA</th></tr>";
 
-        int cont = inicio + 1;
+        int cont = inicio + 1;//Columna #
 
         try {
             while (listado.next()) {
@@ -168,6 +177,10 @@ public class ListadoUsuarios extends HttpServlet {
         return tabla;
     }
 
+    /**
+     * Devuelve el número total de usuario
+     * @return Número de usuarios
+     */
     protected int GetNumUsuarios() {
 
         //HACEMOS LA CONSULTA
